@@ -66,9 +66,9 @@ export default class MyRenderer extends Renderer {
             this.setReady();
 
             window.addEventListener('resize', ()=>{ 
-                this.setRendererSize(); 
+                //this.setRendererSize(); 
             });
-            this.setRendererSize();
+            //this.setRendererSize();
         });
 
         this.initPromise = new Promise((resolve, reject)=>{

@@ -28,6 +28,8 @@ let options = Object.assign(defaults, qsOptions);
 const gameEngine = new MyGameEngine(options);
 const clientEngine = new MyClientEngine(gameEngine, options);
 
+var bdebug = true;
+
 //listen document load event to start game renderer and connection.
 document.addEventListener('DOMContentLoaded', function(e){
     clientEngine.start();
@@ -37,5 +39,22 @@ document.addEventListener('DOMContentLoaded', function(e){
     //let physics = new matterPhysicsEngine({gameEngine:gameEngine});
     //physics.step(0,null);
     //console.log(physics);
+
+    //console.log(document);
+    if (bdebug){
+        //console.log(document);
+        var render = gameEngine.physicsEngine.Render.create({
+            element: document.getElementById("matter-app"),
+            engine: gameEngine.physicsEngine.engine,
+            options: {
+                //width: window.innerWidth,
+                //height: window.innerHeight,
+                //wireframes: false, // <-- important
+                wireframeBackground:'transparent',
+                background:'transparent'
+            }
+        });
+        gameEngine.physicsEngine.Render.run(render);
+    }
 });
 

@@ -4,6 +4,8 @@ import PhysicsEngine from 'lance/physics/PhysicsEngine';
 //var Matter = require('matter-js/build/matter.js');
 import Matter from 'matter-js';
 
+//var document;
+
 export default class MatterPhysicsEngine extends PhysicsEngine {
     constructor(options) {
         super(options);
@@ -28,6 +30,27 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
 
         var ground = this.Bodies.rectangle(400, 610, 800, 60,{ isStatic: true });
         this.World.add(this.engine.world, ground);
+
+        /*
+        //console.log(document);
+        if (document !=null){
+            console.log(document);
+
+            var render = this.Render.create({
+                element: document.body,
+                engine: engine,
+                options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false // <-- important
+                }
+            });
+
+            Render.run(render);
+        }
+        */
+
+
     }
 
     addBox(x, y, options) {
