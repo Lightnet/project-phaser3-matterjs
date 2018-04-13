@@ -1,10 +1,13 @@
 import PhysicsEngine from 'lance/physics/PhysicsEngine';
+import TwoVector from 'lance/serialize/TwoVector';
 
 //https://github.com/liabru/matter-js/issues/101
 //var Matter = require('matter-js/build/matter.js');
 import Matter from 'matter-js';
 
-//var document;
+
+let dv = new TwoVector();
+let dx = new TwoVector();
 
 export default class MatterPhysicsEngine extends PhysicsEngine {
     constructor(options) {
@@ -18,13 +21,14 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         this.Engine = Matter.Engine;
         this.Render = Matter.Render;
         this.World = Matter.World;
+        this.Body = Matter.Body;
         this.Bodies = Matter.Bodies;
         this.Composite = Matter.Composite;
         this.Events = Matter.Events;
         // create an engine
         this.engine = this.Engine.create();
         //console.log("gravity y:",this.engine.world.gravity.y);
-        //this.engine.world.gravity.y = 9;
+        this.engine.world.gravity.y = 0;
         //this.engine.world.gravity.scale = 0.01;
         console.log("Gravity: ",this.engine.world.gravity);
 
@@ -49,8 +53,6 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
             Render.run(render);
         }
         */
-
-
     }
 
     addBox(x, y, options) {
@@ -84,19 +86,68 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
             dt = 1;
 
         let worldSettings = this.gameEngine.worldSettings;
-
-        if (o.isRotatingRight) { o.angle += o.rotationSpeed; }
-        if (o.isRotatingLeft) { o.angle -= o.rotationSpeed; }
+        // https://code.tutsplus.com/tutorials/getting-started-with-matterjs-body-module--cms-28835
+        // http://cwestblog.com/2012/11/12/javascript-degree-and-radian-conversion/
+        if (o.isRotatingRight) { 
+            o.angle += o.rotationSpeed; 
+            if(o.physicsObj){
+                //console.log("isRotatingRight!",o.rotationSpeed);
+                //o.physicsObj.angle += 0.01;
+                //this.Body.rotate( o.physicsObj, Math.PI/6);
+                let angle = o.rotationSpeed * Math.PI / 180;
+                this.Body.rotate( o.physicsObj,angle);
+                //console.log(o.physicsObj.angle);
+            }
+        }
+        if (o.isRotatingLeft) { 
+            o.angle -= o.rotationSpeed; 
+            if(o.physicsObj){
+                //console.log("found!");
+                //o.physicsObj.angle -= 0.01; 
+                let angle = o.rotationSpeed * Math.PI / 180;
+                this.Body.rotate( o.physicsObj, angle*-1);
+                //console.log(o.physicsObj.angle);
+            }
+        }
         //console.log(o.isRotatingRight);
 
         if (o.angle >= 360) { o.angle -= 360; }
         if (o.angle < 0) { o.angle += 360; }
 
+        if (o.isAccelerating) {
+            let rad = o.physicsObj.angle;
+            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
+            o.velocity.add(dv);
+            let velMagnitude = o.velocity.length();
+            if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
+                o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
+            }
+            this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
+        }
+        /*
+        if (o.isAccelerating) {
+            let rad = o.angle * (Math.PI / 180);
+            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
+            o.velocity.add(dv);
+        }
+        // apply gravity
+        if (o.affectedByGravity) o.velocity.add(this.gravity);
+        let velMagnitude = o.velocity.length();
+        if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
+            o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
+        }
+        */
         //====
 
         o.isAccelerating = false;
         o.isRotatingLeft = false;
         o.isRotatingRight = false;
+
+        /*
+        dx.copy(o.velocity).multiplyScalar(dt);
+        o.position.add(dx);
+        o.velocity.multiply(o.friction);
+        */
 
         // wrap around the world edges
         if (worldSettings.worldWrap) {

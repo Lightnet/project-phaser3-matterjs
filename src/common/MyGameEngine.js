@@ -33,9 +33,18 @@ export default class MyGameEngine extends GameEngine {
         //console.log("options.bphysicsdebug",options.bphysicsdebug);
         //console.log(options);
 
-        this.bphysicsdebug = options.bphysicsdebug || false;
+        this.bphysicsdebug = options.bphysicsdebug || false;//for client render debug
 
         this.physicsEngine = new matterPhysicsEngine({ gameEngine: this });
+
+    }
+
+    registerClasses(serializer) {
+        serializer.registerClass(Ship);
+        serializer.registerClass(Missile);
+    }
+
+    setupMatterEvents(){
 
         let engine = this.physicsEngine.engine;
         let Events = this.physicsEngine.Events;
@@ -61,7 +70,7 @@ export default class MyGameEngine extends GameEngine {
                 var pair = pairs[i];
                 //pair.bodyA.render.fillStyle = '#333';
                 //pair.bodyB.render.fillStyle = '#333';
-                //console.log("collisionActive");
+                console.log("collisionActive");
             }
         });
 
@@ -97,17 +106,14 @@ export default class MyGameEngine extends GameEngine {
         //console.log(this.physicsEngine);
     }
 
-    registerClasses(serializer) {
-        serializer.registerClass(Ship);
-        serializer.registerClass(Missile);
-    }
-
     initWorld(){
         super.initWorld({
             worldWrap: true,
             width: 3000,
             height: 3000
         });
+
+        this.setupMatterEvents();
     }
 
     start() {
@@ -152,7 +158,7 @@ export default class MyGameEngine extends GameEngine {
                 //console.log(playerShip);
             } else if (inputData.input == 'right') {
                 playerShip.isRotatingRight = true;
-                console.log("right key");
+                //console.log("right key");
             } else if (inputData.input == 'left') {
                 playerShip.isRotatingLeft = true;
             } else if (inputData.input == 'space') {

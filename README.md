@@ -30,3 +30,6 @@ License: MIT
   - gulpfile.js (auto build script tasks)
   - index.html (default page)
 ```
+
+# Notes:
+ * When matter.js 0.14.1 render is over lay Phaser 3.4.0 render the keyboard does not work. Click on again to get the keybaord to work.

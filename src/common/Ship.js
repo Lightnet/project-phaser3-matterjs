@@ -107,6 +107,7 @@ export default class Ship extends DynamicObject {
     refreshFromPhysics() {
         //2D
         this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        this.angle = this.physicsObj.angle;
 
         //3D
         //this.position.copy(this.physicsObj.position);
@@ -121,6 +122,8 @@ export default class Ship extends DynamicObject {
         //console.log("refreshToPhysics");
         this.physicsObj.position.x = this.position.x;
         this.physicsObj.position.y = this.position.y;
+
+        this.physicsObj.angle = this.angle;
 
         //3D
         //this.physicsObj.position.copy(this.position);

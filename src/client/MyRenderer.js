@@ -106,11 +106,15 @@ export default class MyRenderer extends Renderer {
         var render = this.gameEngine.physicsEngine.Render.create({
             element: document.getElementById("matter-app"),
             engine: this.gameEngine.physicsEngine.engine,
+            
             options: {
                 //width: window.innerWidth,
                 //height: window.innerHeight,
                 //wireframes: false, // <-- important
+                showAngleIndicator: true,
                 wireframeBackground:'transparent',
+                visible : false,
+                enabled: false,
                 background:'transparent'
             }
         });
@@ -235,7 +239,9 @@ export default class MyRenderer extends Renderer {
 
                 if (objData instanceof Ship){
                     //sprite.actor.shipContainerSprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
-                    sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
+                    //console.log(this.gameEngine.world.objects[objId].angle * Math.PI/180);
+                    //sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
+                    sprite.rotation = this.gameEngine.world.objects[objId].angle;
                 } else{
                     if(this.gameEngine.world.objects[objId] !=null){
                         sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
