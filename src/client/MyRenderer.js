@@ -62,9 +62,13 @@ export default class MyRenderer extends Renderer {
 
         //Trigger when the phaser scene create is loaded and setup ui
         this.gameEngine.once('scenebootready', () => {
-            console.log("scenebootready!");
+            //console.log("scenebootready!");
             this.setReady();
-
+            //console.log("this.gameEngine.bphysicsdebug",this.gameEngine.bphysicsdebug);
+            if(this.gameEngine.bphysicsdebug){
+                this.setupMatterJS();
+            }
+            
             window.addEventListener('resize', ()=>{ 
                 //this.setRendererSize(); 
             });
@@ -87,6 +91,7 @@ export default class MyRenderer extends Renderer {
                 this.soundFX_lasergun = this.sound.add("lasergun");
 
                 this.background = this.add.tileSprite(0, 0, 800, 600, 'space');
+                //render.setupMatterJS();
                 onLoadComplete();
             }
 
@@ -95,6 +100,23 @@ export default class MyRenderer extends Renderer {
         });
         
         return this.initPromise;
+    }
+
+    setupMatterJS(){
+        var render = this.gameEngine.physicsEngine.Render.create({
+            element: document.getElementById("matter-app"),
+            engine: this.gameEngine.physicsEngine.engine,
+            options: {
+                //width: window.innerWidth,
+                //height: window.innerHeight,
+                //wireframes: false, // <-- important
+                wireframeBackground:'transparent',
+                background:'transparent'
+            }
+        });
+        this.gameEngine.physicsEngine.Render.run(render);
+        this.render = render;
+
     }
 
     // Resize

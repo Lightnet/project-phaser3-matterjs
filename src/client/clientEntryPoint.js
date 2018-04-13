@@ -20,7 +20,10 @@ const defaults = {
         localObjBending: 0.0,
         remoteObjBending: 0.8,
         bendingIncrements: 6
-    }
+    },
+    //custom settings
+    bphysicsdebug:true
+
 };
 let options = Object.assign(defaults, qsOptions);
 
@@ -28,7 +31,7 @@ let options = Object.assign(defaults, qsOptions);
 const gameEngine = new MyGameEngine(options);
 const clientEngine = new MyClientEngine(gameEngine, options);
 
-var bdebug = true;
+//var bphysicsdebug = true;
 
 //listen document load event to start game renderer and connection.
 document.addEventListener('DOMContentLoaded', function(e){
@@ -41,7 +44,8 @@ document.addEventListener('DOMContentLoaded', function(e){
     //console.log(physics);
 
     //console.log(document);
-    if (bdebug){
+    /*
+    if (bphysicsdebug){
         //console.log(document);
         var render = gameEngine.physicsEngine.Render.create({
             element: document.getElementById("matter-app"),
@@ -56,5 +60,6 @@ document.addEventListener('DOMContentLoaded', function(e){
         });
         gameEngine.physicsEngine.Render.run(render);
     }
+    */
 });
 

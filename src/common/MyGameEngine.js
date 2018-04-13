@@ -30,6 +30,10 @@ export default class MyGameEngine extends GameEngine {
                 //type: 'brute'
             //}
         //});
+        //console.log("options.bphysicsdebug",options.bphysicsdebug);
+        //console.log(options);
+
+        this.bphysicsdebug = options.bphysicsdebug || false;
 
         this.physicsEngine = new matterPhysicsEngine({ gameEngine: this });
 
