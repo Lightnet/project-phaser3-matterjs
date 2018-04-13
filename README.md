@@ -32,6 +32,7 @@ License: MIT
 ```
 
 Client | Common | Server
+-------|--------|-------
 Lance-gg Client | Lance-gg Engine  | Lance-gg Server
 Phaser 3.x.x | Phaser 3.x.x | None
 Matter.js | Matter.js | None
