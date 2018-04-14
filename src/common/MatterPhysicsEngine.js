@@ -40,25 +40,108 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         
         //var ground = this.Bodies.rectangle(400, 610, 800, 60,{ isStatic: true });
         //this.World.add(this.engine.world, ground);
+        //console.log("this");
+        //console.log(this);
+        this.setupMatterEvents();
+    }
 
+    setupMatterEvents(){
+        //2D collision events
         /*
-        //console.log(document);
-        if (document !=null){
-            console.log(document);
-
-            var render = this.Render.create({
-                element: document.body,
-                engine: engine,
-                options: {
-                width: window.innerWidth,
-                height: window.innerHeight,
-                wireframes: false // <-- important
-                }
-            });
-
-            Render.run(render);
-        }
+        this.Events.on(this.engine, 'collisionStart', (event)=> {
+            var pairs = event.pairs;
+            // change object colours to show those starting a collision
+            for (var i = 0; i < pairs.length; i++) {
+                var pair = pairs[i];
+                //pair.bodyA.render.fillStyle = '#333';
+                //pair.bodyB.render.fillStyle = '#333';
+                console.log("collisionStart");
+                let o1 = pair.bodyA.gameObject;
+                let o2 = pair.bodyB.gameObject;
+                // make sure that objects actually exist. might have been destroyed
+                if (!o1 || !o2) return;
+                this.gameEngine.emit('collisionStart', { o1, o2 });
+            }
+        });
         */
+
+        this.Events.on(this.engine, 'collisionStart', (event)=> {
+            this.collisionStart(event);
+        });
+
+        this.Events.on(this.engine, 'collisionActive', (event)=> {
+            this.collisionActive(event);
+        });
+
+        this.Events.on(this.engine, 'collisionEnd', (event)=> {
+            this.collisionEnd(event);
+        });
+
+        this.Events.on(this.engine, 'beforeUpdate', (event)=> {
+            this.beforeUpdate(event);
+        });
+    }
+
+    collisionStart(event){
+        var pairs = event.pairs;
+        // change object colours to show those starting a collision
+        for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i];
+            //pair.bodyA.render.fillStyle = '#333';
+            //pair.bodyB.render.fillStyle = '#333';
+            //console.log("collisionStart");
+            let o1 = pair.bodyA.gameObject;
+            let o2 = pair.bodyB.gameObject;
+            // make sure that objects actually exist. might have been destroyed
+            if (!o1 || !o2) return;
+            this.gameEngine.emit('collisionStart', { o1, o2 });
+        }
+    }
+
+    collisionActive(event){
+        var pairs = event.pairs;
+
+        // change object colours to show those in an active collision (e.g. resting contact)
+        //for (var i = 0; i < pairs.length; i++) {
+            //var pair = pairs[i];
+            //pair.bodyA.render.fillStyle = '#333';
+            //pair.bodyB.render.fillStyle = '#333';
+            //console.log(pair.bodyA);
+            //console.log(pair.bodyB);
+            //console.log("collisionActive");
+            //if(pair.bodyA.gameObject){
+                //console.log("collisionActive found gameObject!");
+            //}
+        //}
+    }
+
+    collisionEnd(event){
+        var pairs = event.pairs;
+        // change object colours to show those ending a collision
+        for (var i = 0; i < pairs.length; i++) {
+            var pair = pairs[i];
+            //pair.bodyA.render.fillStyle = '#222';
+            //pair.bodyB.render.fillStyle = '#222';
+            //console.log("collisionEnd");
+            //if(pair.bodyA.gameObject){
+                //console.log("collisionEnd found gameObject!");
+            //}
+        }
+    }
+
+    beforeUpdate(event){
+        //var engine = event.source;
+        //var bodies = Composite.allBodies(engine.world);
+        //console.log(bodies);
+        //console.log("update?");
+        //for (var i = 0; i < bodies.length; i += 1) {
+            //if(bodies[i].id == 1){
+                //console.log(bodies[i].position);
+            //}
+        //}
+        // apply random forces every 5 secs
+        //if (event.timestamp % 5000 < 50)
+            //shakeScene(engine);
     }
 
     addBox(x, y, options) {
@@ -150,7 +233,6 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
             //o.velocity.x = 0;
             //o.velocity.y = 0;
             o.velocity.add(dv);
-            
             //console.log(o.physicsObj.speed);
         }
         let velMagnitude = o.velocity.length();
@@ -203,7 +285,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
 
     }
 
-    // entry point for a single step of the Simple Physics
+    // entry point for a single step of the Matter.js 2D Physics
     step(dt, objectFilter) {
         //console.log(dt);
         //console.log(objectFilter);

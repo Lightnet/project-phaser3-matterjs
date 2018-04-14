@@ -22,20 +22,9 @@ export default class MyGameEngine extends GameEngine {
     constructor(options) {
         super(options);
         //this.physicsEngine = new SimplePhysicsEngine({ gameEngine: this });
-
-        //this.physicsEngine = new SimplePhysicsEngine({
-            //gameEngine: this,
-            //collisions: {
-                //type: 'brute'
-            //}
-        //});
-        //console.log("options.bphysicsdebug",options.bphysicsdebug);
         //console.log(options);
-
         this.bphysicsdebug = options.bphysicsdebug || false;//for client render debug
-
         this.physicsEngine = new MatterPhysicsEngine({ gameEngine: this });
-
     }
 
     registerClasses(serializer) {
@@ -45,143 +34,35 @@ export default class MyGameEngine extends GameEngine {
         //serializer.registerClass(MGround);
     }
 
-    setupMatterEvents(){
-
-        let engine = this.physicsEngine.engine;
-        let Events = this.physicsEngine.Events;
-        let Composite = this.physicsEngine.Composite;
-
-        let gameEngine = this;
-
-        Events.on(engine, 'collisionStart', function(event) {
-            var pairs = event.pairs;
-            // change object colours to show those starting a collision
-            for (var i = 0; i < pairs.length; i++) {
-                var pair = pairs[i];
-                //pair.bodyA.render.fillStyle = '#333';
-                //pair.bodyB.render.fillStyle = '#333';
-                console.log("collisionStart");
-                //if(pair.bodyA.gameObject){
-                    //console.log("collisionStart found gameObject!");
-                //}
-
-                //console.log(pair.bodyA.gameObject);
-                //console.log(pair.bodyA.gameObject.typeobject);
-                //console.log(pair.bodyB.gameObject);
-                //console.log(pair.bodyB.gameObject.typeobject);
-                //bodyA to contact
-                //bodyB from contact
-
-                if(pair.bodyB.gameObject.typeobject !=null){
-                    if(pair.bodyB.gameObject.typeobject == "projectile"){
-                        //console.log("this...................");
-                        //console.log(gameEngine);
-                        if(pair.bodyA.gameObject.typeobject == "character"){
-                            let missile = pair.bodyB.gameObject;
-                            let ship = pair.bodyA.gameObject;
-                            console.log("missile.playerId",missile.playerId);
-                            console.log("ship.playerId",ship.playerId);
-                            // make sure not to process the collision between a missile and the ship that fired it
-                            if (missile.playerId !== ship.playerId) {
-                                gameEngine.destroyMissile(missile.id);
-                                gameEngine.trace.info(() => `missile by ship=${missile.playerId} hit ship=${ship.id}`);
-                                gameEngine.emit('missileHit', { missile, ship });
-                                console.log("ship hit?");
-                            }
-
-                        }else{
-
-                        }
-                    }
-                }
-            }
-        });
-
-        // an example of using collisionActive event on an engine
-        Events.on(engine, 'collisionActive', function(event) {
-            var pairs = event.pairs;
-
-            // change object colours to show those in an active collision (e.g. resting contact)
-            for (var i = 0; i < pairs.length; i++) {
-                var pair = pairs[i];
-                //pair.bodyA.render.fillStyle = '#333';
-                //pair.bodyB.render.fillStyle = '#333';
-                
-                //console.log(pair.bodyA);
-                //console.log(pair.bodyB);
-                //console.log("collisionActive");
-                //if(pair.bodyA.gameObject){
-                    //console.log("collisionActive found gameObject!");
-                //}
-            }
-        });
-
-        // an example of using collisionEnd event on an engine
-        Events.on(engine, 'collisionEnd', function(event) {
-            var pairs = event.pairs;
-
-            // change object colours to show those ending a collision
-            for (var i = 0; i < pairs.length; i++) {
-                var pair = pairs[i];
-
-                //pair.bodyA.render.fillStyle = '#222';
-                //pair.bodyB.render.fillStyle = '#222';
-                //console.log("collisionEnd");
-                //if(pair.bodyA.gameObject){
-                    //console.log("collisionEnd found gameObject!");
-                //}
-            }
-        });
-
-        // an example of using beforeUpdate event on an engine
-        Events.on(engine, 'beforeUpdate', function(event) {
-            //var engine = event.source;
-            //var bodies = Composite.allBodies(engine.world);
-            //console.log(bodies);
-            //console.log("update?");
-            //for (var i = 0; i < bodies.length; i += 1) {
-                //if(bodies[i].id == 1){
-                    //console.log(bodies[i].position);
-                //}
-            //}
-            // apply random forces every 5 secs
-            //if (event.timestamp % 5000 < 50)
-                //shakeScene(engine);
-        });
-        //console.log(this.physicsEngine);
-    }
-
     initWorld(){
         super.initWorld({
             worldWrap: true,
             width: 3000,
             height: 3000
         });
-
-        this.setupMatterEvents();
     }
 
     start() {
         super.start();
-
+        //matterjs event same as spaace event.
         this.on('collisionStart', e => {
             let collisionObjects = Object.keys(e).map(k => e[k]);
             let ship = collisionObjects.find(o => o instanceof Ship);
             let missile = collisionObjects.find(o => o instanceof Missile);
-
+            
             if (!ship || !missile)
                 return;
 
             // make sure not to process the collision between a missile and the ship that fired it
             if (missile.playerId !== ship.playerId) {
+                //console.log("collisionStart >>>>> ");
                 this.destroyMissile(missile.id);
                 this.trace.info(() => `missile by ship=${missile.playerId} hit ship=${ship.id}`);
                 this.emit('missileHit', { missile, ship });
             }
         });
-
+        
         this.on('postStep', this.reduceVisibleThrust.bind(this));
-
         //this.on('objectAdded', (object) => {});
     }
 
