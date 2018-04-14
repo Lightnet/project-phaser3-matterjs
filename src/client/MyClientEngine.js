@@ -5,6 +5,7 @@
 
 import ClientEngine from 'lance-gg/ClientEngine';
 import KeyboardControls from 'lance-gg/controls/KeyboardControls';
+import MobileControls from './MobileControls';
 import MyRenderer from '../client/MyRenderer';
 
 import Utils from '../common/Utils';
@@ -19,7 +20,6 @@ export default class MyClientEngine extends ClientEngine {
     start() {
         super.start();
         //console.log("client engine!");
-
         // handle gui for game condition
         this.gameEngine.on('objectDestroyed', (obj) => {
             if (obj instanceof Ship && this.gameEngine.isOwnedByPlayer(obj)) {
@@ -27,6 +27,10 @@ export default class MyClientEngine extends ClientEngine {
                 document.body.classList.add('lostGame');
                 document.querySelector('#tryAgain').disabled = false;
             }
+        });
+
+        this.gameEngine.on('join', (obj) => {
+            this.socket.emit('requestRestart');
         });
 
         //This handle UI add listener controls and html buttons.
@@ -45,7 +49,15 @@ export default class MyClientEngine extends ClientEngine {
                     this.renderer.enableFullScreen();
                 }
                 //console.log(clickEvent.currentTarget);
-                clickEvent.currentTarget.disabled = true;
+                //clickEvent.currentTarget.disabled = true;
+                //window.focus();
+                //document.querySelector('#phaser-app').focus();
+                //setTimeout(()=>{ 
+                    //alert("Hello"); 
+                    //document.getElementById("phaser-app").focus();
+                    //console.log("focus?");
+                //}, 1000);
+                //console.log("hello start?");
                 this.socket.emit('requestRestart');
                 //console.log("join game?");
             });
@@ -59,6 +71,7 @@ export default class MyClientEngine extends ClientEngine {
                 this.controls = new MobileControls(this.renderer);
             } else {
                 this.controls = new KeyboardControls(this.renderer);
+                //console.log("default controls");
             }
 
             this.controls = new KeyboardControls(this);
@@ -68,6 +81,7 @@ export default class MyClientEngine extends ClientEngine {
             this.controls.bindKey('space', 'space');
 
             this.controls.on('fire', () => {
+                console.log("spacebar");
                 this.sendInput('space');
             });
 

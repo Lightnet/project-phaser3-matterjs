@@ -20,6 +20,12 @@ export default class Missile extends DynamicObject {
     }
 
     onAddToWorld(gameEngine) {
+        this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
+        //this.physicsObj.angle = this.angle;
+        //this.physicsObj.velocity.x = this.velocity.x;
+        //this.physicsObj.velocity.y = this.velocity.y;
+        //console.log(this.physicsObj);
+
         let renderer = Renderer.getInstance();
         if (renderer) {
             let scene = renderer.getScene();//get current index scenes
@@ -36,10 +42,34 @@ export default class Missile extends DynamicObject {
             renderer.sprites[this.id].destroy();
             delete renderer.sprites[this.id];
         }
+
+        if(this.physicsObj){
+            this.gameEngine.physicsEngine.removeObject(this.physicsObj);
+        }
     }
 
     syncTo(other) {
         super.syncTo(other);
         this.inputId = other.inputId;
     }
+
+    // update position, quaternion, and velocity from new physical state.
+    refreshFromPhysics() {
+        //2D
+        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        //this.angle = this.physicsObj.angle;
+    }
+
+    // update position, quaternion, and velocity from new physical state.
+    refreshToPhysics() {
+        //2D setup needed
+        //console.log("refreshToPhysics");
+        this.physicsObj.position.x = this.position.x;
+        this.physicsObj.position.y = this.position.y;
+
+        //this.physicsObj.angle = this.angle;
+    }
+
+
+
 }

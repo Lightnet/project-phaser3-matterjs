@@ -20,11 +20,14 @@ export default class Ship extends DynamicObject {
     
     onAddToWorld(gameEngine) {
         //console.log(gameEngine);
-        this.physicsObj = gameEngine.physicsEngine.addBox(this.position.x,this.position.y,{});
+        //this.physicsObj = gameEngine.physicsEngine.addBox(this.position.x,this.position.y,{});
+        this.physicsObj = gameEngine.physicsEngine.addCircle(this.position.x,this.position.y,{});
+
+        this.physicsObj.gameObject = this;
         //gameEngine.physicsEngine.addGround(this.position.x,this.position.y,{});
         //this.physicsObj.force
         //console.log(this.position);
-        console.log(this.physicsObj);
+        //console.log(this.physicsObj);
 
         let renderer = Renderer.getInstance();
         if (renderer) {

@@ -51,24 +51,19 @@ export default class MyRenderer extends Renderer {
 
     init() {
         if (this.initPromise) return this.initPromise;
-
         this.isReady = false;
-
         this.lookingAt = { x: 0, y: 0 };
         this.elapsedTime = Date.now();
-
         this.viewportWidth = 800;
         this.viewportHeight = 600;
-
         //Trigger when the phaser scene create is loaded and setup ui
         this.gameEngine.once('scenebootready', () => {
             //console.log("scenebootready!");
             this.setReady();
             //console.log("this.gameEngine.bphysicsdebug",this.gameEngine.bphysicsdebug);
             if(this.gameEngine.bphysicsdebug){
-                this.setupMatterJS();
+                this.setupMatterJSRender();
             }
-            
             window.addEventListener('resize', ()=>{ 
                 //this.setRendererSize(); 
             });
@@ -85,13 +80,14 @@ export default class MyRenderer extends Renderer {
             //This will help load texture correctly with in initPromise 
             this.config.scene.create = function() {
                 let render = MyRenderer.getInstance();
-                render.gameEngine.emit('scenebootready');//trigger setup and ui assign listener. 
+                
                 //setup audio
                 this.soundFX_projectilehit = this.sound.add("projectilehit");
                 this.soundFX_lasergun = this.sound.add("lasergun");
 
                 this.background = this.add.tileSprite(0, 0, 800, 600, 'space');
                 //render.setupMatterJS();
+                render.gameEngine.emit('scenebootready');//trigger setup and ui assign listener.
                 onLoadComplete();
             }
 
@@ -102,25 +98,27 @@ export default class MyRenderer extends Renderer {
         return this.initPromise;
     }
 
-    setupMatterJS(){
-        var render = this.gameEngine.physicsEngine.Render.create({
+    setupMatterJSRender(){
+        this.rendermatter = this.gameEngine.physicsEngine.Render.create({
             element: document.getElementById("matter-app"),
             engine: this.gameEngine.physicsEngine.engine,
             
             options: {
                 //width: window.innerWidth,
                 //height: window.innerHeight,
+                width: 800,
+                height: 600,
                 //wireframes: false, // <-- important
                 showAngleIndicator: true,
                 wireframeBackground:'transparent',
                 visible : false,
                 enabled: false,
+                hasBounds: true,
                 background:'transparent'
             }
         });
-        this.gameEngine.physicsEngine.Render.run(render);
-        this.render = render;
 
+        this.gameEngine.physicsEngine.Render.run(this.rendermatter);
     }
 
     // Resize
@@ -327,7 +325,7 @@ export default class MyRenderer extends Renderer {
         if (this.scene == null){
             this.scene = this.getScene();
         }
-        /*
+        
         if (this.scene){
             //https://labs.phaser.io/edit.html?src=src\camera\scroll%20view.js
             //https://labs.phaser.io/edit.html?src=src\camera\follow%20sprite.js
@@ -346,7 +344,17 @@ export default class MyRenderer extends Renderer {
                 this.scene.background.setY(this.scene.cameras.main.scrollY  + this.viewportHeight/2);
             }
         }
-        */
+        // https://github.com/liabru/matter-js/blob/master/examples/views.js#L96-L126
+        // option{ hasBounds: true }
+        this.rendermatter.bounds.min.x = this.scene.cameras.main.scrollX;
+        this.rendermatter.bounds.max.x = this.scene.cameras.main.scrollX + this.viewportWidth;
+
+        this.rendermatter.bounds.min.y = this.scene.cameras.main.scrollY;
+        this.rendermatter.bounds.max.y = this.scene.cameras.main.scrollY + this.viewportHeight;
+
+        //Bounds.translate(this.render.bounds, translate);
+
+
         this.elapsedTime = now;
     }
 
@@ -375,9 +383,12 @@ export default class MyRenderer extends Renderer {
         }
         document.body.classList.remove('lostGame');
         document.body.classList.add('gameActive');
-        document.querySelector('#tryAgain').disabled = true;
-        document.querySelector('#joinGame').disabled = true;
-        document.querySelector('#joinGame').style.opacity = 0;
+        //document.querySelector('#tryAgain').disabled = true;
+        //document.querySelector('#joinGame').disabled = true;
+        //document.getElementById("joinGame").disabled= true;
+        //document.querySelector('#joinGame').style.opacity = 0;
+
+        document.querySelector('#joinGame').style.display = 'none';
         
         this.gameStarted = true; // todo state shouldn't be saved in the renderer
     }

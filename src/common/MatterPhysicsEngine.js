@@ -12,11 +12,17 @@ let dx = new TwoVector();
 export default class MatterPhysicsEngine extends PhysicsEngine {
     constructor(options) {
         super(options);
-
-        console.log("matter Physics");
-
+        //console.log("matter Physics");
         this.options.dt = this.options.dt || (1 / 60);
         //https://github.com/liabru/matter-js/wiki/Getting-started
+
+        this.defaultCategory = 0x0001;
+        this.playerCategory = 0x0002;
+        this.projectileCategory = 0x0004;
+        this.enemyCategory = 0x0008;
+
+        this.Vector = Matter.Vector;
+        this.Bounds = Matter.Bounds;
 
         this.Engine = Matter.Engine;
         this.Render = Matter.Render;
@@ -30,8 +36,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         //console.log("gravity y:",this.engine.world.gravity.y);
         this.engine.world.gravity.y = 0;
         //this.engine.world.gravity.scale = 0.01;
-        console.log("Gravity: ",this.engine.world.gravity);
-
+        //console.log("Gravity: ",this.engine.world.gravity);
         var ground = this.Bodies.rectangle(400, 610, 800, 60,{ isStatic: true });
         this.World.add(this.engine.world, ground);
 
@@ -63,9 +68,23 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
     }
 
     addCircle(x, y, options) {
-        var box = this.Bodies.rectangle(x, y, 40, 40);
-        this.World.add(this.engine.world, box);
-        return box;
+        var circle = this.Bodies.circle(x, y, 20,{
+            collisionFilter: {
+                mask: this.defaultCategory | this.playerCategory
+            }
+        });
+        this.World.add(this.engine.world, circle);
+        return circle;
+    }
+
+    addProjectile(x, y, options) {
+        var circle = this.Bodies.circle(x, y, 20,{
+            collisionFilter: {
+                mask: this.projectileCategory
+            }
+        });
+        this.World.add(this.engine.world, circle);
+        return circle;
     }
 
     addGround(x, y, options) {
@@ -117,13 +136,27 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         if (o.isAccelerating) {
             let rad = o.physicsObj.angle;
             dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
+            //o.velocity.x = 0;
+            //o.velocity.y = 0;
             o.velocity.add(dv);
-            let velMagnitude = o.velocity.length();
-            if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
-                o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
-            }
-            this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
+            
+            //console.log(o.physicsObj.speed);
         }
+        let velMagnitude = o.velocity.length();
+        if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
+            o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
+        }
+        
+        //console.log(Math.round(o.physicsObj.speed * 100));
+        let speed = Math.round(o.physicsObj.speed * 100);
+        if ((speed <= 5)&&(o.isAccelerating == false)){
+            //this.Body.setVelocity( o.physicsObj, {x: 0, y: 0});
+            //o.velocity.x = 0;
+            //o.velocity.y = 0;
+        }
+
+        this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
+        
         /*
         if (o.isAccelerating) {
             let rad = o.angle * (Math.PI / 180);

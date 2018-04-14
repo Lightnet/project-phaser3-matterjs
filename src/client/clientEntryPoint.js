@@ -23,16 +23,14 @@ const defaults = {
     },
     //custom settings
     bphysicsdebug:true
-
+    //bphysicsdebug:false
 };
 let options = Object.assign(defaults, qsOptions);
 
 // create a client engine and a game engine
 const gameEngine = new MyGameEngine(options);
 const clientEngine = new MyClientEngine(gameEngine, options);
-
 //var bphysicsdebug = true;
-
 //listen document load event to start game renderer and connection.
 document.addEventListener('DOMContentLoaded', function(e){
     clientEngine.start();
@@ -61,5 +59,22 @@ document.addEventListener('DOMContentLoaded', function(e){
         gameEngine.physicsEngine.Render.run(render);
     }
     */
+    /*
+    document.addEventListener('keydown', function(event) {
+        if(event.keyCode == 37) {
+            //alert('Left was pressed');
+            console.log('Left was pressed');
+        }
+        else if(event.keyCode == 39) {
+            //alert('Right was pressed');
+            console.log('Right was pressed');
+        }
+    });
+    */
 });
+
+function JoinTest(){
+    gameEngine.emit('join');
+}
+window.JoinTest =JoinTest;
 

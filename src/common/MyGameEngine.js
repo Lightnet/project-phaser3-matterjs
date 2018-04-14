@@ -57,7 +57,10 @@ export default class MyGameEngine extends GameEngine {
                 var pair = pairs[i];
                 //pair.bodyA.render.fillStyle = '#333';
                 //pair.bodyB.render.fillStyle = '#333';
-                console.log("collisionStart");
+                //console.log("collisionStart");
+                if(pair.bodyA.gameObject){
+                    console.log("collisionStart found gameObject!");
+                }
             }
         });
 
@@ -70,7 +73,13 @@ export default class MyGameEngine extends GameEngine {
                 var pair = pairs[i];
                 //pair.bodyA.render.fillStyle = '#333';
                 //pair.bodyB.render.fillStyle = '#333';
-                console.log("collisionActive");
+                //console.log("collisionActive");
+                //console.log(pair.bodyA);
+                //console.log(pair.bodyB);
+
+                if(pair.bodyA.gameObject){
+                    console.log("collisionActive found gameObject!");
+                }
             }
         });
 
@@ -85,6 +94,9 @@ export default class MyGameEngine extends GameEngine {
                 //pair.bodyA.render.fillStyle = '#222';
                 //pair.bodyB.render.fillStyle = '#222';
                 //console.log("collisionEnd");
+                if(pair.bodyA.gameObject){
+                    console.log("collisionEnd found gameObject!");
+                }
             }
         });
 
@@ -210,8 +222,11 @@ export default class MyGameEngine extends GameEngine {
         missile.playerId = playerShip.playerId;
         missile.ownerId = playerShip.id;
         missile.inputId = inputId; // this enables usage of the missile shadow object
-        missile.velocity.x += Math.cos(missile.angle * (Math.PI / 180)) * 10;
-        missile.velocity.y += Math.sin(missile.angle * (Math.PI / 180)) * 10;
+        //missile.velocity.x += Math.cos(missile.angle * (Math.PI / 180)) * 10;
+        //missile.velocity.y += Math.sin(missile.angle * (Math.PI / 180)) * 10;
+
+        missile.velocity.x += Math.cos(missile.angle) * 10;
+        missile.velocity.y += Math.sin(missile.angle) * 10;
 
         this.trace.trace(() => `missile[${missile.id}] created vel=${missile.velocity}`);
 

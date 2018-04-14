@@ -4,12 +4,14 @@ Created by: Lightnet
 
 License: MIT
 
+Status: Work in progress.
+
 # Required:
  * Nodejs
- * Gulp (npm / auto build scripts)
+ * Gulp (npm / Auto build scripts)
 
 # Information:
- Prototype development build for browser client and server physics nodejs. Phaser 3.x.x 2D render and Matter-js Physics 2D is being used to build this project to run client and server side with nodejs. It used Lance-gg client and server for mutliplayer management.
+ Prototype development build for browser client and server physics nodejs. Phaser 3.x.x 2D render and Matter-js Physics 2D is being used to build this project to run client and server side with nodejs. It used Lance-gg client and server for mutliplayer to sync objects.
 
  Project is base on lance-gg github spaace game mutliplayer.
 
@@ -37,7 +39,7 @@ Lance-gg Client | Lance-gg Engine  | Lance-gg Server
 Phaser 3.x.x | Phaser 3.x.x | None
 Matter.js | Matter.js | None
 
-There are three important scripts. Client engine, game engine, and server engine. You can read in [lance-gg](http://lance.gg/) site for more explain. Game Engine script can act between client engine and server engine script to handle commmon share libraries like player position. Reason is build upon socket.io that share functions on both side is to sync to client and server to matches lerp network for players. 
+There are three important scripts. Client engine, game engine, and server engine. You can read in [lance-gg](http://lance.gg/) site for more explaining. Game Engine script can act between client engine and server engine script to handle commmon share libraries like player position. Reason is build upon socket.io that share functions on both side is to sync objects to client and server to matches lerp network for players.
 
 Common folder files is used to check if the client has renderer variable is assign or not. As for server renderer it doesn't exist but it will sync variable and physics object if setup right. Server engine handle player connect side but required more setup like match making.
 
@@ -50,5 +52,5 @@ Common folder files is used to check if the client has renderer variable is assi
  * [Lance-gg](http://lance.gg/)
  * [Matter.js](http://brm.io/matter-js/)
  * [Phaser 3.x.x](https://phaser.io/)
- * [html5gamedevs Phaser 3 forum](http://www.html5gamedevs.com/forum/33-phaser-3/)
- * [pixijs](http://www.pixijs.com/)
+ * [Html 5 Game Devs Phaser 3 Forum](http://www.html5gamedevs.com/forum/33-phaser-3/)
+ * [Pixijs](http://www.pixijs.com/)
