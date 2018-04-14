@@ -25,6 +25,8 @@ export default class MyGameEngine extends GameEngine {
         //console.log(options);
         this.bphysicsdebug = options.bphysicsdebug || false;//for client render debug
         this.physicsEngine = new MatterPhysicsEngine({ gameEngine: this });
+
+        //this.physicsEngine.setupMatterEvents();
     }
 
     registerClasses(serializer) {
@@ -40,10 +42,13 @@ export default class MyGameEngine extends GameEngine {
             width: 3000,
             height: 3000
         });
+        console.log("init world");
+        this.physicsEngine.setupMatterEvents();
     }
 
     start() {
         super.start();
+        //console.log("start game!");
         //matterjs event same as spaace event.
         this.on('collisionStart', e => {
             let collisionObjects = Object.keys(e).map(k => e[k]);
@@ -137,6 +142,7 @@ export default class MyGameEngine extends GameEngine {
         // we want the missile location and velocity to correspond to that of the ship firing it
         missile.position.copy(playerShip.position);
         missile.velocity.copy(playerShip.velocity);
+
         missile.angle = playerShip.angle;
         missile.playerId = playerShip.playerId;
         missile.ownerId = playerShip.id;

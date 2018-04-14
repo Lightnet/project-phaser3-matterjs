@@ -42,7 +42,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         //this.World.add(this.engine.world, ground);
         //console.log("this");
         //console.log(this);
-        this.setupMatterEvents();
+        //this.setupMatterEvents();
     }
 
     setupMatterEvents(){
@@ -230,10 +230,24 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         if (o.isAccelerating) {
             let rad = o.physicsObj.angle;
             dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
-            //o.velocity.x = 0;
-            //o.velocity.y = 0;
             o.velocity.add(dv);
+
+            //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration);
+            //o.velocity.x = 0;
+            //o.velocity.y = 0.001;
+            //o.velocity.add(dv);
+            //o.velocity.x = o.velocity.x / 100;
+            //o.velocity.y = o.velocity.y / 100;
+            //dv.x = dv.x / 100;
+            //dv.y = dv.y / 100;
+            //dv.x = 0.001;
+            //dv.y = 0.001;
+            //if ((dv.x == null) || (dv.y == null))
+                //return;
+
+            //console.log(dv);
             //console.log(o.physicsObj.speed);
+            //this.Body.applyForce(o.physicsObj, {x:o.physicsObj.x,y:o.physicsObj.y}, {x:dv.x, y:dv.y});
         }
         let velMagnitude = o.velocity.length();
         if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {

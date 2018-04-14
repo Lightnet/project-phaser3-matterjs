@@ -21,8 +21,14 @@ export default class Missile extends DynamicObject {
     }
 
     onAddToWorld(gameEngine) {
+        let Body = gameEngine.physicsEngine.Body;
+
         this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
         this.physicsObj.gameObject = this;
+
+        Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
+
+
         //this.physicsObj.angle = this.angle;
         //this.physicsObj.velocity.x = this.velocity.x;
         //this.physicsObj.velocity.y = this.velocity.y;
