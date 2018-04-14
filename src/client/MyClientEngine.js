@@ -1,5 +1,5 @@
 /*
- Information: Game Client Setup
+ Information: Game client setup handle scoket.io connections and events from users inputs.
 */
 
 

@@ -1,22 +1,21 @@
-'use strict';
+/*
+ Information: This game engine where physics are setup.
+*/
 
+'use strict';
+//import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
+//import PlayerAvatar from './PlayerAvatar';
+import MatterPhysicsEngine from './MatterPhysicsEngine';
+import GameEngine from 'lance/GameEngine';
 import TwoVector from 'lance/serialize/TwoVector';
 
 import Ship from './Ship';
 import Missile from './Missile';
+import MJRectangle from './MJRectangle';
+//import MGround from './MGround';
 
-const PADDING = 20;
 const WIDTH = 400;
 const HEIGHT = 400;
-const PADDLE_WIDTH = 10;
-const PADDLE_HEIGHT = 50;
-
-import GameEngine from 'lance/GameEngine';
-import SimplePhysicsEngine from 'lance/physics/SimplePhysicsEngine';
-
-import matterPhysicsEngine from './matterPhysicsEngine';
-
-//import PlayerAvatar from './PlayerAvatar';
 
 export default class MyGameEngine extends GameEngine {
 
@@ -35,13 +34,15 @@ export default class MyGameEngine extends GameEngine {
 
         this.bphysicsdebug = options.bphysicsdebug || false;//for client render debug
 
-        this.physicsEngine = new matterPhysicsEngine({ gameEngine: this });
+        this.physicsEngine = new MatterPhysicsEngine({ gameEngine: this });
 
     }
 
     registerClasses(serializer) {
         serializer.registerClass(Ship);
         serializer.registerClass(Missile);
+        serializer.registerClass(MJRectangle);
+        //serializer.registerClass(MGround);
     }
 
     setupMatterEvents(){
@@ -130,6 +131,7 @@ export default class MyGameEngine extends GameEngine {
 
     start() {
         super.start();
+
         this.on('collisionStart', e => {
             let collisionObjects = Object.keys(e).map(k => e[k]);
             let ship = collisionObjects.find(o => o instanceof Ship);
@@ -187,6 +189,8 @@ export default class MyGameEngine extends GameEngine {
         //this.physicsEngine.addGround(0, 0, {});
         //console.log(this.physicsEngine);
         console.log("init game!");
+
+        this.addObjectToWorld(new MJRectangle(this, null, {position: new TwoVector(400, 600)}));
     }
 
     addship(playerId){

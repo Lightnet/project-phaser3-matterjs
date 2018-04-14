@@ -15,7 +15,7 @@ Status: Work in progress.
 
  Project is base on lance-gg github spaace game mutliplayer.
 
- [Spaace](https://github.com/lance-gg/spaaace) Pixi.js > Phaser 3.4.0 Frameworks.
+ [Spaace](https://github.com/lance-gg/spaaace) Pixi.js > Phaser 3.x Frameworks.
 
 # Layout:
 ```
@@ -35,13 +35,81 @@ Status: Work in progress.
 
 Client | Common | Server
 -------|--------|-------
-Lance-gg Client | Lance-gg Engine  | Lance-gg Server
+Lance-gg Client (socket.io) | Lance-gg Engine (Management / GameObject)  | Lance-gg Server (socket.io)
 Phaser 3.x.x | Phaser 3.x.x | None
 Matter.js | Matter.js | None
 
-There are three important scripts. Client engine, game engine, and server engine. You can read in [lance-gg](http://lance.gg/) site for more explaining. Game Engine script can act between client engine and server engine script to handle commmon share libraries like player position. Reason is build upon socket.io that share functions on both side is to sync objects to client and server to matches lerp network for players.
+There are three important scripts. Client engine, game engine, and server engine. As well entry point for client and server node. You can read in [lance-gg](http://lance.gg/) site for more explaining. Game Engine script can act between client engine and server engine script to handle commmon share libraries like gameObject or player position. By using Lancegg node package to sync gameObject to socket.io that share functions on both side is to sync correct data object.
 
-Common folder files is used to check if the client has renderer variable is assign or not. As for server renderer it doesn't exist but it will sync variable and physics object if setup right. Server engine handle player connect side but required more setup like match making.
+Common or share libaray folder files is used for serializer gameObject to handle game engine network.
+
+# Example:
+ * Babel Javscript.
+ * Common/Ship.js (Note: Testing...)
+```
+import DynamicObject from 'lance/serialize/DynamicObject';
+import Renderer from '../client/MyRenderer';
+
+export default class Ship extends DynamicObject {
+  constructor(gameEngine, options, props){
+    super(gameEngine, options, props);
+    this.showThrust = 0;
+    this.isBot = false;
+    this.angle = 0;
+  }
+
+  onAddToWorld(gameEngine) {// this will handle client and server add to gameEngine for sync
+    //setup 2D physics for client and server side.
+    this.physicsObj = gameEngine.physicsEngine.addCircle(this.position.x,this.position.y,{});
+    this.physicsObj.gameObject = this;
+
+    let renderer = Renderer.getInstance();
+    //check if client browser or server node if Phaser 3 has render setup.
+    if (renderer) {//if client renderer then setup.
+      let shipActor = new ShipActor(renderer);
+      let sprite = shipActor.sprite;
+      renderer.sprites[this.id] = sprite;
+      sprite.id = this.id;
+
+      if (gameEngine.isOwnedByPlayer(this)) {
+        renderer.addPlayerShip(sprite);
+      } else {
+        renderer.addOffscreenIndicator(this);
+      }
+    }
+  }
+
+  onRemoveFromWorld(gameEngine) {
+    let renderer = Renderer.getInstance();
+    if (renderer) {//check if render client exist
+      if (gameEngine.isOwnedByPlayer(this)) {
+        renderer.playerShip = null;
+      } else {
+        renderer.removeOffscreenIndicator(this);
+      }
+      let sprite = renderer.sprites[this.id];
+      if (sprite) {
+        if (sprite.actor) {
+          // removal "takes time"
+          sprite.actor.destroy().then(()=>{
+            //console.log('deleted sprite actor');
+            delete renderer.sprites[this.id];
+          });
+        } else {
+          //console.log('deleted sprite');
+          sprite.destroy();
+          delete renderer.sprites[this.id];
+        }
+      }
+    }
+    //remove physics object from gameEngine.physicsEngine
+    if(this.physicsObj){
+      this.gameEngine.physicsEngine.removeObject(this.physicsObj);
+    }
+  }
+}
+
+```
 
 
 # Notes:

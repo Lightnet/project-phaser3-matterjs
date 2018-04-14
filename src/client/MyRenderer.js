@@ -1,5 +1,5 @@
 /*
-    Information: Test Build
+    Information: This class handle visible part to draw or render game object. Renderer handle Phaser 3.x.x setup Draw, Matter.js 2D physics Draw Render, and lancegg objects sync.
 */
 
 'use strict';
@@ -14,9 +14,7 @@ if (!isNode) {
 //import 'phaser';
 import Utils from './../common/Utils';
 import Renderer from './PhaserRenderer';
-
 import Ship from '../common/Ship';
-
 
 export default class MyRenderer extends Renderer {
 

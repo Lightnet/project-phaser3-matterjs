@@ -1,3 +1,7 @@
+/*
+ Information: Entry point where game engine and render are setup for game build and connection setup.
+*/
+
 //import '../../assets/sass/main.scss';
 
 import querystring from 'query-string';

@@ -1,5 +1,7 @@
 /*
-    Information: Default build for Phaser Renderer Class
+    Information: Default build for Phaser Renderer Class.  This class handle visible part to draw or render game object.
+
+    Notes: Phaser 3.x.x is tricky to setup to able to load correctly when image fail to load when connection to object sync when skip init() function.
 */
 
 //import isNode from 'detect-node'
