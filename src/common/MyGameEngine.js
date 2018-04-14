@@ -57,7 +57,7 @@ export default class MyGameEngine extends GameEngine {
                 var pair = pairs[i];
                 //pair.bodyA.render.fillStyle = '#333';
                 //pair.bodyB.render.fillStyle = '#333';
-                //console.log("collisionStart");
+                console.log("collisionStart");
                 if(pair.bodyA.gameObject){
                     console.log("collisionStart found gameObject!");
                 }
@@ -73,10 +73,10 @@ export default class MyGameEngine extends GameEngine {
                 var pair = pairs[i];
                 //pair.bodyA.render.fillStyle = '#333';
                 //pair.bodyB.render.fillStyle = '#333';
-                //console.log("collisionActive");
+                
                 //console.log(pair.bodyA);
                 //console.log(pair.bodyB);
-
+                console.log("collisionActive");
                 if(pair.bodyA.gameObject){
                     console.log("collisionActive found gameObject!");
                 }
@@ -93,7 +93,7 @@ export default class MyGameEngine extends GameEngine {
 
                 //pair.bodyA.render.fillStyle = '#222';
                 //pair.bodyB.render.fillStyle = '#222';
-                //console.log("collisionEnd");
+                console.log("collisionEnd");
                 if(pair.bodyA.gameObject){
                     console.log("collisionEnd found gameObject!");
                 }

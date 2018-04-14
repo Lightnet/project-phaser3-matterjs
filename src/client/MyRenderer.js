@@ -242,7 +242,11 @@ export default class MyRenderer extends Renderer {
                     sprite.rotation = this.gameEngine.world.objects[objId].angle;
                 } else{
                     if(this.gameEngine.world.objects[objId] !=null){
-                        sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
+                        //sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
+                        sprite.rotation = this.gameEngine.world.objects[objId].angle; //radian
+                        //console.log("angle?");
+
+                        //console.log(this.gameEngine.world.objects[objId].angle);
                     }
                 }
 
@@ -344,14 +348,16 @@ export default class MyRenderer extends Renderer {
                 this.scene.background.setY(this.scene.cameras.main.scrollY  + this.viewportHeight/2);
             }
         }
-        // https://github.com/liabru/matter-js/blob/master/examples/views.js#L96-L126
-        // option{ hasBounds: true }
-        this.rendermatter.bounds.min.x = this.scene.cameras.main.scrollX;
-        this.rendermatter.bounds.max.x = this.scene.cameras.main.scrollX + this.viewportWidth;
 
-        this.rendermatter.bounds.min.y = this.scene.cameras.main.scrollY;
-        this.rendermatter.bounds.max.y = this.scene.cameras.main.scrollY + this.viewportHeight;
+        if(this.gameEngine.bphysicsdebug){
+            // https://github.com/liabru/matter-js/blob/master/examples/views.js#L96-L126
+            // option{ hasBounds: true }
+            this.rendermatter.bounds.min.x = this.scene.cameras.main.scrollX;
+            this.rendermatter.bounds.max.x = this.scene.cameras.main.scrollX + this.viewportWidth;
 
+            this.rendermatter.bounds.min.y = this.scene.cameras.main.scrollY;
+            this.rendermatter.bounds.max.y = this.scene.cameras.main.scrollY + this.viewportHeight;
+        }
         //Bounds.translate(this.render.bounds, translate);
 
 

@@ -21,6 +21,7 @@ export default class Missile extends DynamicObject {
 
     onAddToWorld(gameEngine) {
         this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
+        this.physicsObj.gameObject = this;
         //this.physicsObj.angle = this.angle;
         //this.physicsObj.velocity.x = this.velocity.x;
         //this.physicsObj.velocity.y = this.velocity.y;
@@ -58,6 +59,8 @@ export default class Missile extends DynamicObject {
         //2D
         this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
         //this.angle = this.physicsObj.angle;
+        //console.log(this.physicsObj.angle);
+        //console.log("sync?");
     }
 
     // update position, quaternion, and velocity from new physical state.

@@ -61,8 +61,10 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
     }
 
     addBox(x, y, options) {
+        let width = options.width | 32;
+        let height = options.height | 32;
         //let box = this.Bodies.rectangle(x, y, 40, 40);
-        var box = this.Bodies.rectangle(400, 200, 80, 80);
+        var box = this.Bodies.rectangle(400, 200, width, height);
         this.World.add(this.engine.world, box);
         return box;
     }
@@ -76,19 +78,23 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         this.World.add(this.engine.world, circle);
         return circle;
     }
-
+    // https://github.com/liabru/matter-js/blob/master/examples/sensors.js
     addProjectile(x, y, options) {
         var circle = this.Bodies.circle(x, y, 20,{
-            collisionFilter: {
-                mask: this.projectileCategory
-            }
+            isSensor: true//,
+            //collisionFilter: {
+                //mask: this.projectileCategory
+            //}
         });
         this.World.add(this.engine.world, circle);
         return circle;
     }
 
     addGround(x, y, options) {
-        var ground = this.Bodies.rectangle(400, 610, 800, 60,{ isStatic: true });
+        var ground = this.Bodies.rectangle(400, 610, 800, 60,{ 
+            isSensor: true,
+            isStatic: true 
+        });
         this.World.add(this.engine.world, ground);
         return ground;
     }
