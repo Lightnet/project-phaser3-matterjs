@@ -51,6 +51,8 @@ export default class MyGameEngine extends GameEngine {
         let Events = this.physicsEngine.Events;
         let Composite = this.physicsEngine.Composite;
 
+        let gameEngine = this;
+
         Events.on(engine, 'collisionStart', function(event) {
             var pairs = event.pairs;
             // change object colours to show those starting a collision
@@ -59,8 +61,38 @@ export default class MyGameEngine extends GameEngine {
                 //pair.bodyA.render.fillStyle = '#333';
                 //pair.bodyB.render.fillStyle = '#333';
                 console.log("collisionStart");
-                if(pair.bodyA.gameObject){
-                    console.log("collisionStart found gameObject!");
+                //if(pair.bodyA.gameObject){
+                    //console.log("collisionStart found gameObject!");
+                //}
+
+                //console.log(pair.bodyA.gameObject);
+                //console.log(pair.bodyA.gameObject.typeobject);
+                //console.log(pair.bodyB.gameObject);
+                //console.log(pair.bodyB.gameObject.typeobject);
+                //bodyA to contact
+                //bodyB from contact
+
+                if(pair.bodyB.gameObject.typeobject !=null){
+                    if(pair.bodyB.gameObject.typeobject == "projectile"){
+                        //console.log("this...................");
+                        //console.log(gameEngine);
+                        if(pair.bodyA.gameObject.typeobject == "character"){
+                            let missile = pair.bodyB.gameObject;
+                            let ship = pair.bodyA.gameObject;
+                            console.log("missile.playerId",missile.playerId);
+                            console.log("ship.playerId",ship.playerId);
+                            // make sure not to process the collision between a missile and the ship that fired it
+                            if (missile.playerId !== ship.playerId) {
+                                gameEngine.destroyMissile(missile.id);
+                                gameEngine.trace.info(() => `missile by ship=${missile.playerId} hit ship=${ship.id}`);
+                                gameEngine.emit('missileHit', { missile, ship });
+                                console.log("ship hit?");
+                            }
+
+                        }else{
+
+                        }
+                    }
                 }
             }
         });
@@ -77,10 +109,10 @@ export default class MyGameEngine extends GameEngine {
                 
                 //console.log(pair.bodyA);
                 //console.log(pair.bodyB);
-                console.log("collisionActive");
-                if(pair.bodyA.gameObject){
-                    console.log("collisionActive found gameObject!");
-                }
+                //console.log("collisionActive");
+                //if(pair.bodyA.gameObject){
+                    //console.log("collisionActive found gameObject!");
+                //}
             }
         });
 
@@ -94,24 +126,24 @@ export default class MyGameEngine extends GameEngine {
 
                 //pair.bodyA.render.fillStyle = '#222';
                 //pair.bodyB.render.fillStyle = '#222';
-                console.log("collisionEnd");
-                if(pair.bodyA.gameObject){
-                    console.log("collisionEnd found gameObject!");
-                }
+                //console.log("collisionEnd");
+                //if(pair.bodyA.gameObject){
+                    //console.log("collisionEnd found gameObject!");
+                //}
             }
         });
 
         // an example of using beforeUpdate event on an engine
         Events.on(engine, 'beforeUpdate', function(event) {
             //var engine = event.source;
-            var bodies = Composite.allBodies(engine.world);
+            //var bodies = Composite.allBodies(engine.world);
             //console.log(bodies);
             //console.log("update?");
-            for (var i = 0; i < bodies.length; i += 1) {
-                if(bodies[i].id == 1){
+            //for (var i = 0; i < bodies.length; i += 1) {
+                //if(bodies[i].id == 1){
                     //console.log(bodies[i].position);
-                }
-            }
+                //}
+            //}
             // apply random forces every 5 secs
             //if (event.timestamp % 5000 < 50)
                 //shakeScene(engine);
@@ -191,10 +223,12 @@ export default class MyGameEngine extends GameEngine {
         console.log("init game!");
 
         this.addObjectToWorld(new MJRectangle(this, null, {position: new TwoVector(400, 600)}));
+
+        this.addship(0);
     }
 
     addship(playerId){
-        let ship = new Ship(this, null, {position: new TwoVector(400, 600)});
+        let ship = new Ship(this, null, {position: new TwoVector(200, 200)});
         ship.playerId = playerId;
         this.addObjectToWorld(ship);
         //console.log(`ship added: ${ship.toString()}`);
