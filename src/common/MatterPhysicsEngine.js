@@ -83,7 +83,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
     }
 
     collisionStart(event){
-        var pairs = event.pairs;
+        let pairs = event.pairs;
         // change object colours to show those starting a collision
         for (var i = 0; i < pairs.length; i++) {
             var pair = pairs[i];
@@ -99,7 +99,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
     }
 
     collisionActive(event){
-        var pairs = event.pairs;
+        let pairs = event.pairs;
 
         // change object colours to show those in an active collision (e.g. resting contact)
         //for (var i = 0; i < pairs.length; i++) {
@@ -116,10 +116,10 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
     }
 
     collisionEnd(event){
-        var pairs = event.pairs;
+        let pairs = event.pairs;
         // change object colours to show those ending a collision
         for (var i = 0; i < pairs.length; i++) {
-            var pair = pairs[i];
+            let pair = pairs[i];
             //pair.bodyA.render.fillStyle = '#222';
             //pair.bodyB.render.fillStyle = '#222';
             //console.log("collisionEnd");
@@ -149,7 +149,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         let height = options.height | 32;
         let params = options.params | {};
         //let box = this.Bodies.rectangle(x, y, 40, 40);
-        var box = this.Bodies.rectangle(x, y, width, height, params);
+        let box = this.Bodies.rectangle(x, y, width, height, params);
         this.World.add(this.engine.world, box);
         return box;
     }
@@ -157,7 +157,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
     addCircle(x, y, options) {
         let radius = options.radius | 20;
         let params = options.params | {};
-        var circle = this.Bodies.circle(x, y, radius,{
+        let circle = this.Bodies.circle(x, y, radius,{
             collisionFilter: {
                 mask: this.defaultCategory | this.playerCategory
             }
@@ -168,7 +168,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
 
     // https://github.com/liabru/matter-js/blob/master/examples/sensors.js
     addProjectile(x, y, options) {
-        var circle = this.Bodies.circle(x, y, 20,{
+        let circle = this.Bodies.circle(x, y, 20,{
             isSensor: true//,
             //collisionFilter: {
                 //mask: this.projectileCategory

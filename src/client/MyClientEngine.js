@@ -48,6 +48,7 @@ export default class MyClientEngine extends ClientEngine {
                 if (Utils.isTouchDevice()){
                     this.renderer.enableFullScreen();
                 }
+                document.querySelector('#joinGame').style.display = 'none';
                 //console.log(clickEvent.currentTarget);
                 //clickEvent.currentTarget.disabled = true;
                 //window.focus();
@@ -81,6 +82,7 @@ export default class MyClientEngine extends ClientEngine {
             this.controls.bindKey('space', 'space');
 
             this.controls.bindKey('c', 'brake');
+            this.controls.bindKey('b', 'deploy');
 
             this.controls.on('fire', () => {
                 console.log("spacebar");

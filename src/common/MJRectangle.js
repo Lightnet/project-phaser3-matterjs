@@ -13,7 +13,6 @@ export default class MJRectangle extends DynamicObject {
         this.showThrust = 0;
         this.isBot = false;
         this.angle = 0;
-        this.typeobject = "wall";
     }
 
     onAddToWorld(gameEngine) {

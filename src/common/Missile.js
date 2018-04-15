@@ -7,7 +7,7 @@ export default class Missile extends DynamicObject {
 
     constructor(gameEngine, options, props){
         super(gameEngine, options, props);
-        this.typeobject = "projectile";
+        
     }
 
     // this is what allows usage of shadow object with input-created objects (missiles)
@@ -21,19 +21,19 @@ export default class Missile extends DynamicObject {
     }
 
     onAddToWorld(gameEngine) {
-        let Body = gameEngine.physicsEngine.Body;
-
-        this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
-        this.physicsObj.gameObject = this;
-        console.log("projectile: ",this.physicsObj.position);
+        this.createBodyPhysics();
+        //let Body = gameEngine.physicsEngine.Body;
+        //this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
+        //this.physicsObj.gameObject = this;
+        //console.log("projectile: ",this.physicsObj.position);
         //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
-        let rad = this.angle;
-        let dv = new TwoVector();
+        //let rad = this.angle;
+        //let dv = new TwoVector();
         //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
-        dv.set(Math.cos(rad), Math.sin(rad));
-        console.log("dv:",dv);
-        Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
-
+        //dv.set(Math.cos(rad), Math.sin(rad));
+        //console.log("dv:",dv);
+        //Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+        //Body.setVelocity( this.physicsObj, {x: 0, y: 0.01});
         //this.physicsObj.angle = this.angle;
         //this.physicsObj.velocity.x = this.velocity.x;
         //this.physicsObj.velocity.y = this.velocity.y;
@@ -47,6 +47,26 @@ export default class Missile extends DynamicObject {
             sprite.x = this.position.x;
             sprite.y = this.position.y;
         }
+    }
+
+    createBodyPhysics(){
+        let Body = this.gameEngine.physicsEngine.Body;
+
+        this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
+        this.physicsObj.gameObject = this;
+        console.log("projectile: ",this.physicsObj.position);
+        //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
+        let rad = this.angle;
+        let dv = new TwoVector();
+        //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
+        dv.set(Math.cos(rad), Math.sin(rad));
+        console.log("dv:",dv);
+        //Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+        Body.setVelocity( this.physicsObj, {x: 0, y: 0.01});
+        //this.physicsObj.angle = this.angle;
+        //this.physicsObj.velocity.x = this.velocity.x;
+        //this.physicsObj.velocity.y = this.velocity.y;
+        //console.log(this.physicsObj);
     }
 
     onRemoveFromWorld(gameEngine) {
@@ -72,7 +92,9 @@ export default class Missile extends DynamicObject {
     refreshFromPhysics() {
         //2D
         this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        //this.angle = this.physicsObj.angle;
+        this.angle = this.physicsObj.angle;
+        this.velocity.x = this.physicsObj.velocity.x;
+        this.velocity.y = this.physicsObj.velocity.y;
         //console.log(this.physicsObj.angle);
         //console.log("sync?");
     }
@@ -83,10 +105,8 @@ export default class Missile extends DynamicObject {
         //console.log("refreshToPhysics");
         this.physicsObj.position.x = this.position.x;
         this.physicsObj.position.y = this.position.y;
-
-        //this.physicsObj.angle = this.angle;
+        this.physicsObj.angle = this.angle;
+        this.physicsObj.velocity.x = this.velocity.x;
+        this.physicsObj.velocity.y = this.velocity.y;
     }
-
-
-
 }

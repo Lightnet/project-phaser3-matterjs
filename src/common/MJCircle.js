@@ -6,27 +6,25 @@ import Serializer from 'lance/serialize/Serializer';
 import DynamicObject from 'lance/serialize/DynamicObject';
 import Renderer from '../client/MyRenderer';
 
-export default class MGround extends DynamicObject {
+export default class MJCircle extends DynamicObject {
 
     constructor(gameEngine, options, props){
         super(gameEngine, options, props);
         this.showThrust = 0;
         this.isBot = false;
         this.angle = 0;
-        
     }
 
     onAddToWorld(gameEngine) {
         //console.log(gameEngine);
         let options = {
-            width:800,
-            height:60,
+            radius:20,
             params:{ 
-                isSensor: true,
-                isStatic: true 
+                isSensor: true//,
+                //isStatic: true 
             }
         };
-        this.physicsObj = gameEngine.physicsEngine.addBox(this.position.x,this.position.y, options);
+        this.physicsObj = gameEngine.physicsEngine.addCircle(this.position.x,this.position.y, options);
         this.physicsObj.gameObject = this;
     }
 

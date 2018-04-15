@@ -12,6 +12,9 @@ import TwoVector from 'lance/serialize/TwoVector';
 import Ship from './Ship';
 import Missile from './Missile';
 import MJRectangle from './MJRectangle';
+import MJCircle from './MJCircle';
+import MObjectDeploy from './MObjectDeploy';
+
 //import MGround from './MGround';
 
 const WIDTH = 400;
@@ -33,6 +36,8 @@ export default class MyGameEngine extends GameEngine {
         serializer.registerClass(Ship);
         serializer.registerClass(Missile);
         serializer.registerClass(MJRectangle);
+        serializer.registerClass(MJCircle);
+        serializer.registerClass(MObjectDeploy);
         //serializer.registerClass(MGround);
     }
 
@@ -101,6 +106,12 @@ export default class MyGameEngine extends GameEngine {
                 //console.log("fire missile");
                 this.makeMissile(playerShip, inputData.messageIndex);
                 this.emit('fireMissile');
+            }else if (inputData.input == 'deploy') {
+                //console.log("fire missile");
+                this.makeObjectDeploy(playerShip, inputData.messageIndex);
+
+                //this.makeMissile(playerShip, inputData.messageIndex);
+                //this.emit('fireMissile');
             }
             //playerShip.refreshFromPhysics();
         }
@@ -140,43 +151,45 @@ export default class MyGameEngine extends GameEngine {
         return ship;
     }
 
+    makeObjectDeploy(playerShip,inputId){
+        let objectDeploy = new MObjectDeploy(this,null,{position:playerShip.physicsObj.position});
+
+        objectDeploy.angle = playerShip.angle;
+        objectDeploy.playerId = playerShip.playerId;
+        objectDeploy.ownerId = playerShip.id;
+        objectDeploy.inputId = inputId; 
+
+        //this.trace.trace(() => `missile[${objectDeploy.id}] created vel=${objectDeploy.velocity}`);
+        let obj = this.addObjectToWorld(objectDeploy);
+        //if (obj)
+            //this.timer.add(30, this.objectDeploy, this, [obj.id]);
+        return objectDeploy;
+    }
+
     makeMissile(playerShip, inputId) {
-
-
         //let missile = new Missile(this,null,{position:};
-
-
         let missile = new Missile(this,null,{position:playerShip.physicsObj.position});
-
         // we want the missile location and velocity to correspond to that of the ship firing it
         //missile.position.copy(playerShip.position);
-
         //missile.position.x = playerShip.physicsObj.position.x;
         //missile.position.y = playerShip.physicsObj.position.y;
         console.log("playerShip:",playerShip.position);
         console.log("physics:",playerShip.physicsObj.position);
-
         //missile.velocity.copy(playerShip.velocity);
-
         missile.angle = playerShip.angle;
         missile.playerId = playerShip.playerId;
         missile.ownerId = playerShip.id;
         missile.inputId = inputId; // this enables usage of the missile shadow object
         //missile.velocity.x += Math.cos(missile.angle * (Math.PI / 180)) * 10;
         //missile.velocity.y += Math.sin(missile.angle * (Math.PI / 180)) * 10;
-
         //this one radian
         //missile.velocity.x += Math.cos(missile.angle) * 10;
         //missile.velocity.y += Math.sin(missile.angle) * 10;
-
         this.trace.trace(() => `missile[${missile.id}] created vel=${missile.velocity}`);
-
         let obj = this.addObjectToWorld(missile);
-
         // if the object was added successfully to the game world, destroy the missile after some game ticks
         if (obj)
             this.timer.add(30, this.destroyMissile, this, [obj.id]);
-
         return missile;
     }
 

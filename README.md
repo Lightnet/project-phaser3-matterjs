@@ -17,6 +17,13 @@ Status: Work in progress.
 
  [Spaace](https://github.com/lance-gg/spaaace) Pixi.js > Phaser 3.x Frameworks.
 
+# Controls:
+ * B = Deploy Object Test.
+ * C = Brake or stop ship movement.
+ * Space = Shoot
+ * Up key = Forward
+ * Left and Right Key = Rotate
+
 # Layout:
 ```
  Dev folder:

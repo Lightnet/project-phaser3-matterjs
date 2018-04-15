@@ -15,7 +15,7 @@ export default class Ship extends DynamicObject {
         this.showThrust = 0;
         this.isBot = false;
         this.angle = 0;
-        this.typeobject = "character";
+        
     }
 
     get maxSpeed() { return 3.0; }
@@ -140,7 +140,6 @@ export default class Ship extends DynamicObject {
             //console.log(o.physicsObj.angle);
         }
     }
-
 
     // ship rotation is input-deterministic, no bending needed
     get bendingAngleLocalMultiple() { return 0.0; }
