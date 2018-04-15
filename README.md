@@ -9,13 +9,14 @@ Status: Work in progress.
 # Required:
  * Nodejs
  * Gulp (npm / Auto build scripts)
+ * Visual Studio Code ( Optional )
 
 # Information:
- Prototype development build for browser client and server physics nodejs. Phaser 3.x.x 2D render and Matter-js Physics 2D is being used to build this project to run client and server side with nodejs. It used Lance-gg client and server for mutliplayer to sync objects.
+ Prototype development build for browser client and server 2D physics nodejs. Phaser 3.x.x 2D render and Matter-js Physics 2D is being used to build this project to run client and server side with nodejs. It used Lance-gg client and server for mutliplayer to sync objects.
 
  Project is base on lance-gg github spaace game mutliplayer.
 
- [Spaace](https://github.com/lance-gg/spaaace) Pixi.js > Phaser 3.x Frameworks.
+ [Spaaace](https://github.com/lance-gg/spaaace) Pixi.js > Phaser 3.x Frameworks.
 
 # Controls:
  * B = Deploy Object Test.
@@ -46,7 +47,7 @@ Lance-gg Client (socket.io) | Lance-gg Engine (Management / GameObject)  | Lance
 Phaser 3.x.x | Phaser 3.x.x | None
 Matter.js | Matter.js | None
 
-There are three important scripts. Client engine, game engine, and server engine. As well entry point for client and server node. You can read in [lance-gg](http://lance.gg/) site for more explaining. Game Engine script can act between client engine and server engine script to handle commmon share libraries like gameObject or player position. By using Lancegg node package to sync gameObject to socket.io that share functions on both side is to sync correct data object.
+There are three important scripts. Client engine, game engine, and server engine. As well entry point for client and server node. You can read in [lance-gg](http://lance.gg/) site for more explaining. Game Engine script can act between client engine and server engine script to handle common share libraries like gameObject or player position. By using Lancegg node package to sync gameObject to socket.io that share functions on both side is to sync correct data object.
 
 Common or share libaray folder files is used for serializer gameObject to handle game engine network.
 
@@ -118,14 +119,14 @@ export default class Ship extends DynamicObject {
 
 ```
 
-
 # Notes:
- * When matter.js 0.14.1 render is over lay Phaser 3.4.0 render the keyboard does not work. Click on again to get the keybaord to work.
+ * When matter.js 0.1x.x render is over lay Phaser 3.x.x render the keyboard does not work. Click on again to get the keybaord to work.
+ * Matter.js 2D physics handler is under testing.
 
 # Credits:
- * [Spaace](https://github.com/lance-gg/spaaace)
- * [Lance-gg](http://lance.gg/)
- * [Matter.js](http://brm.io/matter-js/)
- * [Phaser 3.x.x](https://phaser.io/)
- * [Html 5 Game Devs Phaser 3 Forum](http://www.html5gamedevs.com/forum/33-phaser-3/)
- * [Pixijs](http://www.pixijs.com/)
+ * [Spaace](https://github.com/lance-gg/spaaace) Github
+ * [Lance-gg](http://lance.gg/) Site
+ * [Matter.js](http://brm.io/matter-js/) Site
+ * [Phaser 3.x.x](https://phaser.io/) Site
+ * [Html 5 Game Devs Phaser 3 Forum](http://www.html5gamedevs.com/forum/33-phaser-3/) Forum
+ * [Pixijs](http://www.pixijs.com/) Site
