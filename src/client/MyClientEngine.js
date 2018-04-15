@@ -80,6 +80,8 @@ export default class MyClientEngine extends ClientEngine {
             this.controls.bindKey('up', 'up', { repeat: true } );
             this.controls.bindKey('space', 'space');
 
+            this.controls.bindKey('c', 'brake');
+
             this.controls.on('fire', () => {
                 console.log("spacebar");
                 this.sendInput('space');

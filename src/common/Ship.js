@@ -6,6 +6,7 @@ import Serializer from 'lance/serialize/Serializer';
 import DynamicObject from 'lance/serialize/DynamicObject';
 import Renderer from '../client/MyRenderer';
 import ShipActor from '../client/ShipActor';
+import TwoVector from 'lance/serialize/TwoVector';
 
 export default class Ship extends DynamicObject {
 
@@ -85,6 +86,61 @@ export default class Ship extends DynamicObject {
         }
 
     }
+
+    thrusterForward(){
+        if(this.physicsObj){
+            let Body = this.gameEngine.physicsEngine.Body;
+
+            let rad = this.physicsObj.angle;
+            let dv = new TwoVector();
+            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(5);
+
+            Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+            //Body.setAngularVelocity(this.physicsObj, 0);
+            //Body.setVelocity( this.physicsObj, {x: 0, y: 0});
+            //console.log("ship brake!");
+        }
+    }
+
+    thrusterBrake(){
+        if(this.physicsObj){
+            let Body = this.gameEngine.physicsEngine.Body;
+            //this.physicsObj
+            this.velocity.x = 0;
+            this.velocity.y = 0;
+            Body.setAngularVelocity(this.physicsObj, 0);
+            Body.setVelocity( this.physicsObj, {x: 0, y: 0});
+            console.log("ship brake!");
+            
+        }
+    }
+
+    RotatingLeft(){
+        if(this.physicsObj){
+            this.angle -= this.rotationSpeed; 
+            let Body = this.gameEngine.physicsEngine.Body;
+            //console.log("isRotatingRight!",o.rotationSpeed);
+            //o.physicsObj.angle += 0.01;
+            //this.Body.rotate( o.physicsObj, Math.PI/6);
+            let angle = this.rotationSpeed * Math.PI / 180;
+            Body.rotate( this.physicsObj,angle * -1);
+            //console.log(o.physicsObj.angle);
+        }
+    }
+
+    RotatingRight(){
+        if(this.physicsObj){
+            this.angle += this.rotationSpeed;
+            let Body = this.gameEngine.physicsEngine.Body;
+            //console.log("isRotatingRight!",o.rotationSpeed);
+            //o.physicsObj.angle += 0.01;
+            //this.Body.rotate( o.physicsObj, Math.PI/6);
+            let angle = this.rotationSpeed * Math.PI / 180;
+            Body.rotate( this.physicsObj,angle);
+            //console.log(o.physicsObj.angle);
+        }
+    }
+
 
     // ship rotation is input-deterministic, no bending needed
     get bendingAngleLocalMultiple() { return 0.0; }

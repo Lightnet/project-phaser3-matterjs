@@ -87,13 +87,17 @@ export default class MyGameEngine extends GameEngine {
             if (inputData.input == 'up') {
                 playerShip.isAccelerating = true;
                 playerShip.showThrust = 5; // show thrust for next steps.
+                playerShip.thrusterForward();
                 //console.log(playerShip);
             } else if (inputData.input == 'right') {
                 playerShip.isRotatingRight = true;
                 //console.log("right key");
             } else if (inputData.input == 'left') {
                 playerShip.isRotatingLeft = true;
-            } else if (inputData.input == 'space') {
+            } else if (inputData.input == 'brake') {
+                playerShip.thrusterBrake();
+                console.log("brake");
+            }else if (inputData.input == 'space') {
                 //console.log("fire missile");
                 this.makeMissile(playerShip, inputData.messageIndex);
                 this.emit('fireMissile');
@@ -137,11 +141,22 @@ export default class MyGameEngine extends GameEngine {
     }
 
     makeMissile(playerShip, inputId) {
-        let missile = new Missile(this);
+
+
+        //let missile = new Missile(this,null,{position:};
+
+
+        let missile = new Missile(this,null,{position:playerShip.physicsObj.position});
 
         // we want the missile location and velocity to correspond to that of the ship firing it
-        missile.position.copy(playerShip.position);
-        missile.velocity.copy(playerShip.velocity);
+        //missile.position.copy(playerShip.position);
+
+        //missile.position.x = playerShip.physicsObj.position.x;
+        //missile.position.y = playerShip.physicsObj.position.y;
+        console.log("playerShip:",playerShip.position);
+        console.log("physics:",playerShip.physicsObj.position);
+
+        //missile.velocity.copy(playerShip.velocity);
 
         missile.angle = playerShip.angle;
         missile.playerId = playerShip.playerId;
@@ -150,8 +165,9 @@ export default class MyGameEngine extends GameEngine {
         //missile.velocity.x += Math.cos(missile.angle * (Math.PI / 180)) * 10;
         //missile.velocity.y += Math.sin(missile.angle * (Math.PI / 180)) * 10;
 
-        missile.velocity.x += Math.cos(missile.angle) * 10;
-        missile.velocity.y += Math.sin(missile.angle) * 10;
+        //this one radian
+        //missile.velocity.x += Math.cos(missile.angle) * 10;
+        //missile.velocity.y += Math.sin(missile.angle) * 10;
 
         this.trace.trace(() => `missile[${missile.id}] created vel=${missile.velocity}`);
 

@@ -224,9 +224,10 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         }
         //console.log(o.isRotatingRight);
 
-        if (o.angle >= 360) { o.angle -= 360; }
-        if (o.angle < 0) { o.angle += 360; }
+        //if (o.angle >= 360) { o.angle -= 360; }
+        //if (o.angle < 0) { o.angle += 360; }
 
+        /*
         if (o.isAccelerating) {
             let rad = o.physicsObj.angle;
             dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
@@ -248,21 +249,27 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
             //console.log(dv);
             //console.log(o.physicsObj.speed);
             //this.Body.applyForce(o.physicsObj, {x:o.physicsObj.x,y:o.physicsObj.y}, {x:dv.x, y:dv.y});
+            this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
         }
+        */
+        /*
         let velMagnitude = o.velocity.length();
         if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
             o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
         }
-        
+        */
         //console.log(Math.round(o.physicsObj.speed * 100));
+        /*
         let speed = Math.round(o.physicsObj.speed * 100);
         if ((speed <= 5)&&(o.isAccelerating == false)){
             //this.Body.setVelocity( o.physicsObj, {x: 0, y: 0});
             //o.velocity.x = 0;
             //o.velocity.y = 0;
+            //this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
         }
+        */
 
-        this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
+        //this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
         
         /*
         if (o.isAccelerating) {

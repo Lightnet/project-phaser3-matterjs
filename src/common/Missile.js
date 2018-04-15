@@ -1,7 +1,7 @@
 import Serializer from 'lance/serialize/Serializer';
 import DynamicObject from 'lance/serialize/DynamicObject';
 import Renderer from '../client/MyRenderer';
-
+import TwoVector from 'lance/serialize/TwoVector';
 
 export default class Missile extends DynamicObject {
 
@@ -25,9 +25,14 @@ export default class Missile extends DynamicObject {
 
         this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
         this.physicsObj.gameObject = this;
-
-        Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
-
+        console.log("projectile: ",this.physicsObj.position);
+        //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
+        let rad = this.angle;
+        let dv = new TwoVector();
+        //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
+        dv.set(Math.cos(rad), Math.sin(rad));
+        console.log("dv:",dv);
+        Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
 
         //this.physicsObj.angle = this.angle;
         //this.physicsObj.velocity.x = this.velocity.x;
@@ -59,6 +64,8 @@ export default class Missile extends DynamicObject {
     syncTo(other) {
         super.syncTo(other);
         this.inputId = other.inputId;
+        if (this.physicsObj)
+            this.refreshToPhysics();
     }
 
     // update position, quaternion, and velocity from new physical state.
