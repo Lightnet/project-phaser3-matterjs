@@ -238,12 +238,12 @@ export default class MyRenderer extends Renderer {
                     //console.log(this.gameEngine.world.objects[objId].angle * Math.PI/180);
                     //sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
                     sprite.rotation = this.gameEngine.world.objects[objId].angle;
+                    //console.log(sprite.rotation);
                 } else{
                     if(this.gameEngine.world.objects[objId] !=null){
                         //sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
                         sprite.rotation = this.gameEngine.world.objects[objId].angle; //radian
                         //console.log("angle?");
-
                         //console.log(this.gameEngine.world.objects[objId].angle);
                     }
                 }

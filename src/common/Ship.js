@@ -3,7 +3,7 @@
 */
 
 import Serializer from 'lance/serialize/Serializer';
-import DynamicObject from 'lance/serialize/DynamicObject';
+//import DynamicObject from 'lance/serialize/DynamicObject';
 
 import Renderer from '../client/MyRenderer';
 import ShipActor from '../client/ShipActor';
@@ -90,17 +90,17 @@ export default class Ship extends PhysicalObject2D {
     thrusterForward(){
         if(this.physicsObj){
             let Body = this.gameEngine.physicsEngine.Body;
-
             //let rad = this.physicsObj.angle;
-            let rad = this.angle;
+            //console.log(this.physicsObj);
+            //this.physicsObj.angle = this.angle;
+            //let rad = this.angle;
+            let rad = this.physicsObj.angle;
             let dv = new TwoVector();
             dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
-            console.log(dv);
-
-            //Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
-            Body.setVelocity( this.physicsObj, {x: 0.001, y: 0});
-
-            console.log(this.physicsObj.velocity);
+            //console.log(dv);
+            Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+            //Body.setVelocity( this.physicsObj, {x: 0.001, y: 0});
+            //console.log(this.physicsObj.velocity);
             //Body.setAngularVelocity(this.physicsObj, 0);
             //Body.setVelocity( this.physicsObj, {x: 0, y: 0});
             //console.log("ship brake!");

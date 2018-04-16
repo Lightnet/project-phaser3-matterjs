@@ -12,7 +12,7 @@ export default class PhysicalObject2D extends GameObject {
             position: { type: Serializer.TYPES.CLASSINSTANCE },
             angle: { type: Serializer.TYPES.FLOAT32 },
             velocity: { type: Serializer.TYPES.CLASSINSTANCE },
-            angularVelocity: { type: Serializer.TYPES.CLASSINSTANCE }
+            angularVelocity: { type: Serializer.TYPES.FLOAT32 }
         }, super.netScheme);
     }
 
@@ -29,7 +29,7 @@ export default class PhysicalObject2D extends GameObject {
 
         this.position = new TwoVector(0, 0);
         this.velocity = new TwoVector(0, 0);
-        this.angularVelocity = new TwoVector(0, 0);
+        this.angularVelocity = 0;
 
         /**
         * object orientation angle in degrees
@@ -133,51 +133,44 @@ export default class PhysicalObject2D extends GameObject {
         // TODO: does refreshToPhysics() really belong here?
         //       should refreshToPhysics be decoupled from syncTo
         //       and called explicitly in all cases?
-        this.refreshToPhysics();
+        //this.refreshToPhysics();
     }
 
     syncTo(other, options) {
         super.syncTo(other);
         this.position.copy(other.position);
         //this.quaternion.copy(other.quaternion);
-        this.rotationSpeed = other.rotationSpeed;
-        this.acceleration = other.acceleration;
-        this.angularVelocity.copy(other.angularVelocity);
+        //this.rotationSpeed = other.rotationSpeed;
+        //this.acceleration = other.acceleration;
+        //this.angularVelocity.copy(other.angularVelocity);
 
         if (!options || !options.keepVelocity) {
             this.velocity.copy(other.velocity);
         }
 
-        if (this.physicsObj)
-            this.refreshToPhysics();
+        //if (this.physicsObj)
+            //this.refreshToPhysics();
     }
 
     // update position, quaternion, and velocity from new physical state.
     refreshFromPhysics() {
-        //this.position.copy(this.physicsObj.position);
-
         this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        console.log(this.position);
-        //this.quaternion.copy(this.physicsObj.quaternion);
-        //this.velocity.copy(this.physicsObj.velocity);
-        //this.angularVelocity.copy(this.physicsObj.angularVelocity);
+        this.velocity.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        this.angularVelocity = this.physicsObj.angularVelocity;
+        this.angle = this.physicsObj.angle;
     }
 
     // update position, quaternion, and velocity from new physical state.
     refreshToPhysics() {
         this.physicsObj.position.x = this.position.x;
         this.physicsObj.position.y = this.position.y;
-
-        //this.physicsObj.velocity.x = this.velocity.x;
-        //this.physicsObj.velocity.y = this.velocity.y;
-
-        //this.physicsObj.angularVelocity.x = this.angularVelocity.x;
-        //this.physicsObj.angularVelocity.y = this.angularVelocity.y;
-
-        //this.physicsObj.position.copy(this.position);
-        //this.physicsObj.quaternion.copy(this.quaternion);
-        //this.physicsObj.velocity.copy(this.velocity);
-        //this.physicsObj.angularVelocity.copy(this.angularVelocity);
+        //console.log(this.physicsObj.position);
+        this.physicsObj.velocity.x = this.velocity.x;
+        this.physicsObj.velocity.y = this.velocity.y;
+        //console.log(this.physicsObj.velocity);
+        this.physicsObj.angle = this.angle; //angle = 0 //radian?
+        this.physicsObj.angularVelocity = this.angularVelocity; // angularVelocity = 0
+        //console.log(this.physicsObj.angularVelocity);
     }
 
     // apply one increment of bending
@@ -190,7 +183,7 @@ export default class PhysicalObject2D extends GameObject {
             const posDelta = (new TwoVector()).copy(this.bendingPositionDelta).multiplyScalar(timeFactor);
             const avDelta = (new TwoVector()).copy(this.bendingAVDelta).multiplyScalar(timeFactor);
             this.position.add(posDelta);
-            this.angularVelocity.add(avDelta);
+            //this.angularVelocity.add(avDelta);
 
             // TODO: this is an unacceptable workaround that must be removed.  It solves the
             // jitter problem by applying only three steps of slerp (thus avoiding slerp to back in time
@@ -200,7 +193,7 @@ export default class PhysicalObject2D extends GameObject {
             }
         } else {
             this.position.add(this.bendingPositionDelta);
-            this.angularVelocity.add(this.bendingAVDelta);
+            //this.angularVelocity.add(this.bendingAVDelta);
             //this.quaternion.slerp(this.bendingTarget.quaternion, this.incrementScale);
         }
 

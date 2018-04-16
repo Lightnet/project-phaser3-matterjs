@@ -1,5 +1,7 @@
 import Serializer from 'lance/serialize/Serializer';
 import DynamicObject from 'lance/serialize/DynamicObject';
+//import PhysicalObject2D from './PhysicalObject2D';
+
 import Renderer from '../client/MyRenderer';
 import TwoVector from 'lance/serialize/TwoVector';
 
@@ -21,23 +23,8 @@ export default class Missile extends DynamicObject {
     }
 
     onAddToWorld(gameEngine) {
+        //create physics body
         this.createBodyPhysics();
-        //let Body = gameEngine.physicsEngine.Body;
-        //this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
-        //this.physicsObj.gameObject = this;
-        //console.log("projectile: ",this.physicsObj.position);
-        //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
-        //let rad = this.angle;
-        //let dv = new TwoVector();
-        //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
-        //dv.set(Math.cos(rad), Math.sin(rad));
-        //console.log("dv:",dv);
-        //Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
-        //Body.setVelocity( this.physicsObj, {x: 0, y: 0.01});
-        //this.physicsObj.angle = this.angle;
-        //this.physicsObj.velocity.x = this.velocity.x;
-        //this.physicsObj.velocity.y = this.velocity.y;
-        //console.log(this.physicsObj);
 
         let renderer = Renderer.getInstance();
         if (renderer) {
@@ -54,18 +41,16 @@ export default class Missile extends DynamicObject {
 
         this.physicsObj = this.gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
         this.physicsObj.gameObject = this;
-        console.log("projectile: ",this.physicsObj.position);
+        //console.log("projectile: ",this.physicsObj.position);
         //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
         let rad = this.angle;
+        //this.physicsObj.angle = this.angle;
         let dv = new TwoVector();
         //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
         dv.set(Math.cos(rad), Math.sin(rad));
-        console.log("dv:",dv);
-        //Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
-        Body.setVelocity( this.physicsObj, {x: 0, y: 0.01});
-        //this.physicsObj.angle = this.angle;
-        //this.physicsObj.velocity.x = this.velocity.x;
-        //this.physicsObj.velocity.y = this.velocity.y;
+        //console.log("dv:",dv);
+        Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+        //Body.setVelocity( this.physicsObj, {x: 0, y: 0.01});
         //console.log(this.physicsObj);
     }
 
@@ -84,29 +69,29 @@ export default class Missile extends DynamicObject {
     syncTo(other) {
         super.syncTo(other);
         this.inputId = other.inputId;
-        if (this.physicsObj)
-            this.refreshToPhysics();
+        //if (this.physicsObj)
+            //this.refreshToPhysics();
     }
 
     // update position, quaternion, and velocity from new physical state.
-    refreshFromPhysics() {
+    //refreshFromPhysics() {
         //2D
-        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        this.angle = this.physicsObj.angle;
-        this.velocity.x = this.physicsObj.velocity.x;
-        this.velocity.y = this.physicsObj.velocity.y;
+        //this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        //this.angle = this.physicsObj.angle;
+        //this.velocity.x = this.physicsObj.velocity.x;
+        //this.velocity.y = this.physicsObj.velocity.y;
         //console.log(this.physicsObj.angle);
         //console.log("sync?");
-    }
+    //}
 
     // update position, quaternion, and velocity from new physical state.
-    refreshToPhysics() {
+    //refreshToPhysics() {
         //2D setup needed
         //console.log("refreshToPhysics");
-        this.physicsObj.position.x = this.position.x;
-        this.physicsObj.position.y = this.position.y;
-        this.physicsObj.angle = this.angle;
-        this.physicsObj.velocity.x = this.velocity.x;
-        this.physicsObj.velocity.y = this.velocity.y;
-    }
+        //this.physicsObj.position.x = this.position.x;
+        //this.physicsObj.position.y = this.position.y;
+        //this.physicsObj.angle = this.angle;
+        //this.physicsObj.velocity.x = this.velocity.x;
+        //this.physicsObj.velocity.y = this.velocity.y;
+    //}
 }
