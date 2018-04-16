@@ -52,7 +52,7 @@ export default class Missile extends DynamicObject {
     createBodyPhysics(){
         let Body = this.gameEngine.physicsEngine.Body;
 
-        this.physicsObj = gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
+        this.physicsObj = this.gameEngine.physicsEngine.addProjectile(this.position.x,this.position.y,{});
         this.physicsObj.gameObject = this;
         console.log("projectile: ",this.physicsObj.position);
         //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
