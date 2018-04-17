@@ -3,7 +3,7 @@
 */
 
 import Serializer from 'lance/serialize/Serializer';
-//import DynamicObject from 'lance/serialize/DynamicObject';
+import DynamicObject from 'lance/serialize/DynamicObject';
 
 import Renderer from '../client/MyRenderer';
 import ShipActor from '../client/ShipActor';
@@ -16,7 +16,7 @@ export default class Ship extends PhysicalObject2D {
         super(gameEngine, options, props);
         this.showThrust = 0;
         this.isBot = false;
-        this.angle = 90;
+        //this.angle = 90;
     }
 
     get maxSpeed() { return 3.0; }
@@ -25,12 +25,7 @@ export default class Ship extends PhysicalObject2D {
         //console.log(gameEngine);
         //this.physicsObj = gameEngine.physicsEngine.addBox(this.position.x,this.position.y,{});
         this.physicsObj = gameEngine.physicsEngine.addCircle(this.position.x,this.position.y,{});
-
         this.physicsObj.gameObject = this;
-        //gameEngine.physicsEngine.addGround(this.position.x,this.position.y,{});
-        //this.physicsObj.force
-        //console.log(this.position);
-        //console.log(this.physicsObj);
 
         let renderer = Renderer.getInstance();
         if (renderer) {

@@ -2,6 +2,7 @@ import Serializer from 'lance/serialize/Serializer';
 import GameObject from 'lance/serialize/GameObject';
 import Renderer from '../client/MyRenderer';
 import TwoVector from 'lance/serialize/TwoVector';
+import MathUtils from 'lance/lib/MathUtils';
 
 //not build yet...
 export default class PhysicalObject2D extends GameObject {
@@ -36,6 +37,7 @@ export default class PhysicalObject2D extends GameObject {
         * @member {Number}
         */
         this.angle = 90;
+        this.bendingAngle = 0;
 
         /**
         * should rotate left by {@link DynamicObject#rotationSpeed} on next step
@@ -74,7 +76,7 @@ export default class PhysicalObject2D extends GameObject {
         if (props.position) this.position.copy(props.position);
         if (props.velocity) this.velocity.copy(props.velocity);
         //if (props.quaternion) this.quaternion.copy(props.quaternion);
-        if (props.angularVelocity) this.angularVelocity.copy(props.angularVelocity);
+        if (props.angularVelocity) this.angularVelocity = props.angularVelocity;
 
         this.class = PhysicalObject2D;
     }
@@ -110,23 +112,21 @@ export default class PhysicalObject2D extends GameObject {
         this.bendingPositionDelta.subtract(original.position);
         this.bendingPositionDelta.multiplyScalar(this.incrementScale);
 
-        // get the incremental angular-velocity
-        this.bendingAVDelta = (new TwoVector()).copy(this.angularVelocity);
-        this.bendingAVDelta.subtract(original.angularVelocity);
-        this.bendingAVDelta.multiplyScalar(this.incrementScale);
 
-        // get the incremental quaternion rotation
-        //let currentConjugate = (new Quaternion()).copy(original.quaternion).conjugate();
-        //this.bendingQuaternionDelta = (new Quaternion()).copy(this.quaternion);
-        //this.bendingQuaternionDelta.multiply(currentConjugate);
-        //let axisAngle = this.bendingQuaternionDelta.toAxisAngle();
-        //axisAngle.angle *= this.incrementScale;
-        //this.bendingQuaternionDelta.setFromAxisAngle(axisAngle.axis, axisAngle.angle);
+        // angle bending factor
+        let angleBending = bending;
+        if (typeof this.bendingAngleMultiple === 'number')
+            angleBending = this.bendingAngleMultiple;
+        if (isLocal && (typeof this.bendingAngleLocalMultiple === 'number'))
+            angleBending = this.bendingAngleLocalMultiple;
+        this.bendingAngle = MathUtils.interpolateDeltaWithWrapping(original.angle, this.angle, angleBending, 0, 360) / bendingIncrements;
+        this.angle = original.angle;
 
-        this.bendingTarget = (new this.constructor());
-        this.bendingTarget.syncTo(this);
+        //this.bendingTarget = (new this.constructor());
+        //this.bendingTarget.syncTo(this);
         this.syncTo(original, { keepVelocity: true });
-        this.bendingIncrements = bendingIncrements;
+        //this.bendingIncrements = bendingIncrements;
+        //console.log(bendingIncrements);
         this.bending = bending;
 
         // TODO: use configurable physics bending
@@ -139,38 +139,13 @@ export default class PhysicalObject2D extends GameObject {
     syncTo(other, options) {
         super.syncTo(other);
         this.position.copy(other.position);
-        //this.quaternion.copy(other.quaternion);
-        //this.rotationSpeed = other.rotationSpeed;
-        //this.acceleration = other.acceleration;
-        //this.angularVelocity.copy(other.angularVelocity);
-
         if (!options || !options.keepVelocity) {
             this.velocity.copy(other.velocity);
         }
+        this.bendingAngle = other.bendingAngle;
 
         //if (this.physicsObj)
             //this.refreshToPhysics();
-    }
-
-    // update position, quaternion, and velocity from new physical state.
-    refreshFromPhysics() {
-        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        this.velocity.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        this.angularVelocity = this.physicsObj.angularVelocity;
-        this.angle = this.physicsObj.angle;
-    }
-
-    // update position, quaternion, and velocity from new physical state.
-    refreshToPhysics() {
-        this.physicsObj.position.x = this.position.x;
-        this.physicsObj.position.y = this.position.y;
-        //console.log(this.physicsObj.position);
-        this.physicsObj.velocity.x = this.velocity.x;
-        this.physicsObj.velocity.y = this.velocity.y;
-        //console.log(this.physicsObj.velocity);
-        this.physicsObj.angle = this.angle; //angle = 0 //radian?
-        this.physicsObj.angularVelocity = this.angularVelocity; // angularVelocity = 0
-        //console.log(this.physicsObj.angularVelocity);
     }
 
     // apply one increment of bending
@@ -196,6 +171,7 @@ export default class PhysicalObject2D extends GameObject {
             //this.angularVelocity.add(this.bendingAVDelta);
             //this.quaternion.slerp(this.bendingTarget.quaternion, this.incrementScale);
         }
+        this.angle += this.bendingAngle;
 
         // TODO: the following approach is encountering gimbal lock
         // this.quaternion.multiply(this.bendingQuaternionDelta);
@@ -204,16 +180,31 @@ export default class PhysicalObject2D extends GameObject {
 
     // interpolate implementation
     interpolate(nextObj, percent, worldSettings) {
-
-        // get the incremental delta position
-        // const positionDelta = (new ThreeVector())
-        //     .copy(nextObj.position)
-        //     .subtract(this.position)
-        //     .multiplyScalar(playPercentage);
-        // this.position.add(positionDelta);
-
+        let angle = this.angle;
         // slerp to target position
         this.position.lerp(nextObj.position, percent);
-        //this.quaternion.slerp(nextObj.quaternion, percent);
+
+        var shortestAngle = ((((nextObj.angle - angle) % 360) + 540) % 360) - 180;
+        this.angle = angle + shortestAngle * percent;
+    }
+
+    // update position, quaternion, and velocity from new physical state.
+    refreshFromPhysics() {
+        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        this.velocity.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        //this.angle = this.physicsObj.angle;
+    }
+
+    // update position, quaternion, and velocity from new physical state.
+    refreshToPhysics() {
+        this.physicsObj.position.x = this.position.x;
+        this.physicsObj.position.y = this.position.y;
+        //console.log(this.physicsObj.position);
+        this.physicsObj.velocity.x = this.velocity.x;
+        this.physicsObj.velocity.y = this.velocity.y;
+        //console.log(this.physicsObj.velocity);
+        //this.physicsObj.angularVelocity = this.angularVelocity; // angularVelocity = 0
+        //this.physicsObj.angle = this.angle; //angle = 0 //radian?
+        //console.log(this.physicsObj.angularVelocity);
     }
 }
