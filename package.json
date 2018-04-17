@@ -11,7 +11,6 @@
    "dependencies": {
       "breakpoint-sass": "^2.7.1",
       "express": "^4.16.3",
-      "express-csp-header": "^2.2.0",
       "gulp": "^3.9.1",
       "helmet": "^3.12.0",
       "lance-gg": "^2.0.5",
@@ -38,7 +37,6 @@
       "gulp-babel": "^7.0.1",
       "gulp-clean": "^0.4.0",
       "gulp-concat": "^2.6.1",
-      "gulp-debug": "^3.2.0",
       "gulp-live-server": "0.0.31",
       "gulp-rename": "^1.2.2",
       "gulp-sass": "^3.2.1",
@@ -48,7 +46,6 @@
       "node-sass": "^4.8.3",
       "uglifyify": "^4.0.5",
       "vinyl-buffer": "^1.0.1",
-      "vinyl-source-stream": "^2.0.0",
-      "vinyl-transform": "^1.0.0"
+      "vinyl-source-stream": "^2.0.0"
    }
 }

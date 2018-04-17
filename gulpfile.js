@@ -9,14 +9,14 @@ var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
 //const concat = require('gulp-concat');
 var buffer = require('vinyl-buffer');
-const debug = require('gulp-debug');
+//const debug = require('gulp-debug');
 
 const babel = require('gulp-babel');
 var babelify = require('babelify');
 
 var browserSync = require('browser-sync').create();
 var browserify = require('browserify');
-var transform = require('vinyl-transform');
+//var transform = require('vinyl-transform');
 
 var sass = require('gulp-sass');
 
@@ -36,7 +36,7 @@ gulp.task('build',['main-script','src-server-script','scr-client-build'],functio
 //build lance server, express, and socket.io
 gulp.task('main-script', function () {
     return gulp.src(['main.js'])
-    .pipe(debug({title: 'Building main script node >> '}))
+    //.pipe(debug({title: 'Building main script node >> '}))
     .pipe(babel())
     .pipe(gulp.dest('dist'));
 });
@@ -44,7 +44,7 @@ gulp.task('main-script', function () {
 //build lance server engine
 gulp.task('src-server-script', function () {
     return gulp.src(['./src/**/*.js','!src/client/clientEntryPoint.js'])//,'!src/client/*.js'])
-    .pipe(debug({title: 'Building server script node >> '}))
+    //.pipe(debug({title: 'Building server script node >> '}))
     .pipe(babel())
     .pipe(gulp.dest('dist/src'));
 });
@@ -91,7 +91,7 @@ gulp.task('scr-client-build',  function(cb) {
         })
         .pipe(source('bundle.js'))
         .pipe(buffer())//this go here first
-        .pipe( debug({title: 'Client script build >>'}) )
+        //.pipe( debug({title: 'Client script build >>'}) )
         //.on('error', function(err) { console.error(err); this.emit('end'); })
         //.pipe(uglify())
         //.pipe(sourcemaps.init({ loadMaps: true }))
@@ -116,14 +116,14 @@ gulp.task('clean',['clean-server-scripts','clean-bundle-scripts']);
 //clean server scripts.
 gulp.task('clean-server-scripts', function () {
     return gulp.src('./dist/**/*.js', {read: false})
-    .pipe(debug({title: 'Cleaning server scripts!!!'}))
+    //.pipe(debug({title: 'Cleaning server scripts!!!'}))
     .pipe(clean({force: true}));
 });
 
 //clean bundle.js for client.
 gulp.task('clean-bundle-scripts', function () {
     return gulp.src('./public/bundle.js', {read: false})
-    .pipe(debug({title: 'Cleaning bundle.js script!'}))
+    //.pipe(debug({title: 'Cleaning bundle.js script!'}))
     .pipe(clean({force: true}));
 });
 

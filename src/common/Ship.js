@@ -4,18 +4,19 @@
 
 import Serializer from 'lance/serialize/Serializer';
 import DynamicObject from 'lance/serialize/DynamicObject';
+
 import Renderer from '../client/MyRenderer';
 import ShipActor from '../client/ShipActor';
 import TwoVector from 'lance/serialize/TwoVector';
+import PhysicalObject2D from './PhysicalObject2D';
 
-export default class Ship extends DynamicObject {
+export default class Ship extends PhysicalObject2D {
 
     constructor(gameEngine, options, props){
         super(gameEngine, options, props);
         this.showThrust = 0;
         this.isBot = false;
-        this.angle = 0;
-        
+        //this.angle = 90;
     }
 
     get maxSpeed() { return 3.0; }
@@ -24,12 +25,7 @@ export default class Ship extends DynamicObject {
         //console.log(gameEngine);
         //this.physicsObj = gameEngine.physicsEngine.addBox(this.position.x,this.position.y,{});
         this.physicsObj = gameEngine.physicsEngine.addCircle(this.position.x,this.position.y,{});
-
         this.physicsObj.gameObject = this;
-        //gameEngine.physicsEngine.addGround(this.position.x,this.position.y,{});
-        //this.physicsObj.force
-        //console.log(this.position);
-        //console.log(this.physicsObj);
 
         let renderer = Renderer.getInstance();
         if (renderer) {
@@ -84,18 +80,22 @@ export default class Ship extends DynamicObject {
         if(this.physicsObj){
             this.gameEngine.physicsEngine.removeObject(this.physicsObj);
         }
-
     }
 
     thrusterForward(){
         if(this.physicsObj){
             let Body = this.gameEngine.physicsEngine.Body;
-
+            //let rad = this.physicsObj.angle;
+            //console.log(this.physicsObj);
+            //this.physicsObj.angle = this.angle;
+            //let rad = this.angle;
             let rad = this.physicsObj.angle;
             let dv = new TwoVector();
-            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(5);
-
+            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
+            //console.log(dv);
             Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+            //Body.setVelocity( this.physicsObj, {x: 0.001, y: 0});
+            //console.log(this.physicsObj.velocity);
             //Body.setAngularVelocity(this.physicsObj, 0);
             //Body.setVelocity( this.physicsObj, {x: 0, y: 0});
             //console.log("ship brake!");
@@ -124,7 +124,7 @@ export default class Ship extends DynamicObject {
             //this.Body.rotate( o.physicsObj, Math.PI/6);
             let angle = this.rotationSpeed * Math.PI / 180;
             Body.rotate( this.physicsObj,angle * -1);
-            //console.log(o.physicsObj.angle);
+            //console.log(this.angle);
         }
     }
 
@@ -137,7 +137,7 @@ export default class Ship extends DynamicObject {
             //this.Body.rotate( o.physicsObj, Math.PI/6);
             let angle = this.rotationSpeed * Math.PI / 180;
             Body.rotate( this.physicsObj,angle);
-            //console.log(o.physicsObj.angle);
+            //console.log(this.angle);
         }
     }
 
@@ -157,38 +157,25 @@ export default class Ship extends DynamicObject {
     syncTo(other) {
         super.syncTo(other);
         this.showThrust = other.showThrust;
-
         //if (this.physicsObj)
             //this.refreshToPhysics();
     }
 
     // update position, quaternion, and velocity from new physical state.
-    refreshFromPhysics() {
+    //refreshFromPhysics() {
         //2D
-        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        this.angle = this.physicsObj.angle;
-
-        //3D
-        //this.position.copy(this.physicsObj.position);
-        //this.quaternion.copy(this.physicsObj.quaternion);
-        //this.velocity.copy(this.physicsObj.velocity);
-        //this.angularVelocity.copy(this.physicsObj.angularVelocity);
-    }
+        //this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        //this.angle = this.physicsObj.angle;
+    //}
 
     // update position, quaternion, and velocity from new physical state.
-    refreshToPhysics() {
+    //refreshToPhysics() {
         //2D setup needed
         //console.log("refreshToPhysics");
-        this.physicsObj.position.x = this.position.x;
-        this.physicsObj.position.y = this.position.y;
-        this.physicsObj.angle = this.angle;
-
-        //3D
-        //this.physicsObj.position.copy(this.position);
-        //this.physicsObj.quaternion.copy(this.quaternion);
-        //this.physicsObj.velocity.copy(this.velocity);
-        //this.physicsObj.angularVelocity.copy(this.angularVelocity);
-    }
+        //this.physicsObj.position.x = this.position.x;
+        //this.physicsObj.position.y = this.position.y;
+        //this.physicsObj.angle = this.angle;
+    //}
 
     destroy() {
         console.log("Ship Destroy");

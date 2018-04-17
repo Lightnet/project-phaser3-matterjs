@@ -125,7 +125,7 @@ export default class MyGameEngine extends GameEngine {
 
         this.addObjectToWorld(new MJRectangle(this, null, {position: new TwoVector(400, 600)}));
 
-        this.addship(0);
+        //this.addship(0);
     }
 
     addship(playerId){
