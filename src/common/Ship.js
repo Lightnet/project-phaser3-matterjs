@@ -30,7 +30,7 @@ export default class Ship extends PhysicalObject2D {
         //gameEngine.physicsEngine.addGround(this.position.x,this.position.y,{});
         //this.physicsObj.force
         //console.log(this.position);
-        console.log(this.physicsObj);
+        //console.log(this.physicsObj);
 
         let renderer = Renderer.getInstance();
         if (renderer) {
@@ -129,7 +129,7 @@ export default class Ship extends PhysicalObject2D {
             //this.Body.rotate( o.physicsObj, Math.PI/6);
             let angle = this.rotationSpeed * Math.PI / 180;
             Body.rotate( this.physicsObj,angle * -1);
-            console.log(this.angle);
+            //console.log(this.angle);
         }
     }
 
@@ -142,7 +142,7 @@ export default class Ship extends PhysicalObject2D {
             //this.Body.rotate( o.physicsObj, Math.PI/6);
             let angle = this.rotationSpeed * Math.PI / 180;
             Body.rotate( this.physicsObj,angle);
-            console.log(this.angle);
+            //console.log(this.angle);
         }
     }
 

@@ -1,11 +1,12 @@
 import Serializer from 'lance/serialize/Serializer';
 import DynamicObject from 'lance/serialize/DynamicObject';
-//import PhysicalObject2D from './PhysicalObject2D';
+import PhysicalObject2D from './PhysicalObject2D';
 
 import Renderer from '../client/MyRenderer';
 import TwoVector from 'lance/serialize/TwoVector';
 
-export default class Missile extends DynamicObject {
+//export default class Missile extends DynamicObject {
+export default class Missile extends PhysicalObject2D {    
 
     constructor(gameEngine, options, props){
         super(gameEngine, options, props);
@@ -29,10 +30,10 @@ export default class Missile extends DynamicObject {
         let renderer = Renderer.getInstance();
         if (renderer) {
             let scene = renderer.getScene();//get current index scenes
-            let sprite = scene.add.image(10, 10, 'shot');
+            let sprite = this.sprite = scene.add.image(this.position.x, this.position.y, 'shot');
             renderer.sprites[this.id] = sprite; //assign id for render sprites array
-            sprite.x = this.position.x;
-            sprite.y = this.position.y;
+            //sprite.x = this.position.x;
+            //sprite.y = this.position.y;
         }
     }
 
@@ -44,12 +45,23 @@ export default class Missile extends DynamicObject {
         //console.log("projectile: ",this.physicsObj.position);
         //Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
         let rad = this.angle;
+
+        //let rad = Math.PI/180 * this.angle;
+        
         //this.physicsObj.angle = this.angle;
-        let dv = new TwoVector();
-        //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
-        dv.set(Math.cos(rad), Math.sin(rad));
-        //console.log("dv:",dv);
-        Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+        //let dv = new TwoVector();
+        //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(5);
+        //dv.set(Math.cos(rad), Math.sin(rad));
+
+        let dv = {
+            x:Math.cos(this.angle),
+            y:Math.sin(this.angle)
+        };
+
+        console.log("dv =====================");
+        console.log("this.angle",this.angle);
+        console.log("dv:",dv);
+        //Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
         //Body.setVelocity( this.physicsObj, {x: 0, y: 0.01});
         //console.log(this.physicsObj);
     }
@@ -57,6 +69,11 @@ export default class Missile extends DynamicObject {
     onRemoveFromWorld(gameEngine) {
         let renderer = Renderer.getInstance();
         if (renderer && renderer.sprites[this.id]) {
+            if(this.sprite){
+                this.sprite.destroy();
+            }
+            console.log("delete? missile");
+            console.log(renderer.sprites[this.id]);
             renderer.sprites[this.id].destroy();
             delete renderer.sprites[this.id];
         }
@@ -66,9 +83,15 @@ export default class Missile extends DynamicObject {
         }
     }
 
+    destroy() {
+        console.log("missle Destroy");
+        //console.log(this);
+    }
+
     syncTo(other) {
         super.syncTo(other);
         this.inputId = other.inputId;
+        this.angle = other.angle;
         //if (this.physicsObj)
             //this.refreshToPhysics();
     }
