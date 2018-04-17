@@ -54,6 +54,15 @@ export default class MyRenderer extends Renderer {
         this.elapsedTime = Date.now();
         this.viewportWidth = 800;
         this.viewportHeight = 600;
+
+        this.shippos = document.getElementById("shippos");
+        this.shipvec = document.getElementById("shipvec");
+        this.shipangle = document.getElementById("shipangle");
+
+        this.pshippos = document.getElementById("pshippos");
+        this.pshipvec = document.getElementById("pshipvec");
+        this.pshipangle = document.getElementById("pshipangle");
+
         //Trigger when the phaser scene create is loaded and setup ui
         this.gameEngine.once('scenebootready', () => {
             //console.log("scenebootready!");
@@ -78,12 +87,22 @@ export default class MyRenderer extends Renderer {
             //This will help load texture correctly with in initPromise 
             this.config.scene.create = function() {
                 let render = MyRenderer.getInstance();
-                
+                //console.log(this);
                 //setup audio
                 this.soundFX_projectilehit = this.sound.add("projectilehit");
                 this.soundFX_lasergun = this.sound.add("lasergun");
-
+                //
                 this.background = this.add.tileSprite(0, 0, 800, 600, 'space');
+                //
+                //this.shippos = this.add.text(10, 50);
+                //this.shippos.setText('Pos:');
+
+                //this.shipvec = this.add.text(10, 70);
+                //this.shipvec.setText('Vec:');
+
+                //this.shipangle = this.add.text(10, 90);
+                //this.shipangle.setText('Angle:');
+
                 //render.setupMatterJS();
                 render.gameEngine.emit('scenebootready');//trigger setup and ui assign listener.
                 onLoadComplete();
@@ -194,6 +213,22 @@ export default class MyRenderer extends Renderer {
         
     }
 
+    updateshipinfo(obj){
+        //this.shippos = document.getElementById("shippos");
+        //this.shipvec = document.getElementById("shipvec");
+        //this.shipangle = document.getElementById("shipangle");
+
+        this.shippos.innerHTML = "pos x:"+ obj.position.x + " y:" + obj.position.y;
+        this.shipvec.innerHTML = "vec x:"+ obj.velocity.x + " y:" + obj.velocity.y;
+        this.shipangle.innerHTML = "angle:"+ obj.angle;
+
+
+        this.pshippos.innerHTML = "ppos x:"+ obj.physicsObj.position.x + " y:" + obj.position.y;
+        this.pshipvec.innerHTML = "pvec x:"+ obj.physicsObj.velocity.x + " y:" + obj.velocity.y;
+        this.pshipangle.innerHTML = "pangle:"+ obj.physicsObj.angle;
+
+    }
+
     //client connection update and objects sync
     draw(t, dt) {
         super.draw(t, dt);
@@ -224,6 +259,13 @@ export default class MyRenderer extends Renderer {
                     //console.log(objData.showThrust);
                 }
 
+                if(objData instanceof Ship && sprite == this.playerShip){
+                    //console.log(objData.position);
+                    //console.log(objData.position);
+                    this.updateshipinfo(objData);
+
+                }
+
                 if (objData instanceof Ship && sprite != this.playerShip) {
                     this.updateOffscreenIndicator(objData);
                 }
@@ -236,8 +278,10 @@ export default class MyRenderer extends Renderer {
                 if (objData instanceof Ship){
                     //sprite.actor.shipContainerSprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
                     //console.log(this.gameEngine.world.objects[objId].angle * Math.PI/180);
-                    //sprite.rotation = this.gameEngine.world.objects[objId].angle * Math.PI/180;
-                    sprite.rotation = this.gameEngine.world.objects[objId].angle;
+                    let angle = this.gameEngine.world.objects[objId].angle;
+                    sprite.rotation = angle * Math.PI/180;
+                    //sprite.rotation = Math.PI/180 * this.gameEngine.world.objects[objId].angle;
+                    //sprite.rotation = this.gameEngine.world.objects[objId].angle;
                     //console.log(sprite.rotation);
                 } else{
                     if(this.gameEngine.world.objects[objId] !=null){
@@ -278,13 +322,21 @@ export default class MyRenderer extends Renderer {
         if (this.playerShip) {
             cameraTarget = this.playerShip;
             // this.cameraRoam = false;
+
+            if (this.scene){
+                if(this.playerShip.actor){
+                    //console.log(this.playerShip.actor);
+                    //this.scene.shippos.setText("pos x:"+this.playerShip.actor.position.x + " y:" + this.playerShip.actor.position.y);
+
+
+                }
+            }
         } else if (!this.gameStarted && !cameraTarget) {
 
             // calculate centroid
             cameraTarget = getCentroid(this.gameEngine.world.objects);
             this.cameraRoam = true;
         }
-        
 
         if (cameraTarget) {
             // 'cameraroam' in Utils.getUrlVars()

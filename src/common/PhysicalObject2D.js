@@ -158,7 +158,11 @@ export default class PhysicalObject2D extends GameObject {
             const posDelta = (new TwoVector()).copy(this.bendingPositionDelta).multiplyScalar(timeFactor);
             const avDelta = (new TwoVector()).copy(this.bendingAVDelta).multiplyScalar(timeFactor);
             this.position.add(posDelta);
+
+            // http://brm.io/matter-js/docs/classes/Body.html
+
             //this.angularVelocity.add(avDelta);
+
 
             // TODO: this is an unacceptable workaround that must be removed.  It solves the
             // jitter problem by applying only three steps of slerp (thus avoiding slerp to back in time
@@ -191,12 +195,14 @@ export default class PhysicalObject2D extends GameObject {
     // update position, quaternion, and velocity from new physical state.
     refreshFromPhysics() {
         this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        this.velocity.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        this.velocity.set(this.physicsObj.velocity.x,this.physicsObj.velocity.y);
         //this.angle = this.physicsObj.angle;
     }
 
     // update position, quaternion, and velocity from new physical state.
     refreshToPhysics() {
+        //http://brm.io/matter-js/docs/classes/Body.html
+
         this.physicsObj.position.x = this.position.x;
         this.physicsObj.position.y = this.position.y;
         //console.log(this.physicsObj.position);
