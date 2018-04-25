@@ -199,8 +199,25 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
             dt = 1;
 
         let worldSettings = this.gameEngine.worldSettings;
+
+        /*
+        if (o.isAccelerating) { 
+            let rad = o.angle;
+            let dv = new TwoVector();
+            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
+            //this.Body.setVelocity( o.physicsObj, {x: dv.x, y: dv.y});
+            //this.Body.setVelocity( o.physicsObj, {x: 0.1, y: dv.y});
+            this.Body.setVelocity( o.physicsObj, {x: dv.x, y: dv.y});
+            //o.physicsObj.position.x += 1;
+            //console.log(o.physicsObj.position);
+        }
+        */
+
+
+
         // https://code.tutsplus.com/tutorials/getting-started-with-matterjs-body-module--cms-28835
         // http://cwestblog.com/2012/11/12/javascript-degree-and-radian-conversion/
+        /*
         if (o.isRotatingRight) { 
             o.angle += o.rotationSpeed; 
             if(o.physicsObj){
@@ -222,69 +239,7 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
                 //console.log(o.physicsObj.angle);
             }
         }
-        //console.log(o.isRotatingRight);
-
-        //if (o.angle >= 360) { o.angle -= 360; }
-        //if (o.angle < 0) { o.angle += 360; }
-
-        /*
-        if (o.isAccelerating) {
-            let rad = o.physicsObj.angle;
-            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
-            o.velocity.add(dv);
-
-            //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration);
-            //o.velocity.x = 0;
-            //o.velocity.y = 0.001;
-            //o.velocity.add(dv);
-            //o.velocity.x = o.velocity.x / 100;
-            //o.velocity.y = o.velocity.y / 100;
-            //dv.x = dv.x / 100;
-            //dv.y = dv.y / 100;
-            //dv.x = 0.001;
-            //dv.y = 0.001;
-            //if ((dv.x == null) || (dv.y == null))
-                //return;
-
-            //console.log(dv);
-            //console.log(o.physicsObj.speed);
-            //this.Body.applyForce(o.physicsObj, {x:o.physicsObj.x,y:o.physicsObj.y}, {x:dv.x, y:dv.y});
-            this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
-        }
         */
-        /*
-        let velMagnitude = o.velocity.length();
-        if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
-            o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
-        }
-        */
-        //console.log(Math.round(o.physicsObj.speed * 100));
-        /*
-        let speed = Math.round(o.physicsObj.speed * 100);
-        if ((speed <= 5)&&(o.isAccelerating == false)){
-            //this.Body.setVelocity( o.physicsObj, {x: 0, y: 0});
-            //o.velocity.x = 0;
-            //o.velocity.y = 0;
-            //this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
-        }
-        */
-
-        //this.Body.setVelocity( o.physicsObj, {x: o.velocity.x, y: o.velocity.y});
-        
-        /*
-        if (o.isAccelerating) {
-            let rad = o.angle * (Math.PI / 180);
-            dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(o.acceleration).multiplyScalar(dt);
-            o.velocity.add(dv);
-        }
-        // apply gravity
-        if (o.affectedByGravity) o.velocity.add(this.gravity);
-        let velMagnitude = o.velocity.length();
-        if ((o.maxSpeed !== null) && (velMagnitude > o.maxSpeed)) {
-            o.velocity.multiplyScalar(o.maxSpeed / velMagnitude);
-        }
-        */
-        //====
 
         o.isAccelerating = false;
         o.isRotatingLeft = false;
@@ -332,7 +287,10 @@ export default class MatterPhysicsEngine extends PhysicsEngine {
         //this.Engine.update(this.engine, dt || this.options.dt);
         //console.log(this.engine.timing.delta);
         //this.Engine.update(this.engine, delta);
-        this.Engine.update(this.engine, this.engine.timing.delta);
+        //console.log(delta);
+        //this.Engine.update(this.engine, this.engine.timing.delta);
+        this.Engine.update(this.engine, delta);
+
     }
 
     removeObject(obj) {

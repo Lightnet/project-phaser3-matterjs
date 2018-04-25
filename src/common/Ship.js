@@ -16,12 +16,16 @@ export default class Ship extends PhysicalObject2D {
         super(gameEngine, options, props);
         this.showThrust = 0;
         this.isBot = false;
+
+        //this.rotationSpeed = 2.5;
+        this.rotationSpeed = 0.01;
         //this.angle = 90;
     }
 
     get maxSpeed() { return 3.0; }
     
     onAddToWorld(gameEngine) {
+        this.Body = gameEngine.physicsEngine.Body;
         //console.log(gameEngine);
         //this.physicsObj = gameEngine.physicsEngine.addBox(this.position.x,this.position.y,{});
         this.physicsObj = gameEngine.physicsEngine.addCircle(this.position.x,this.position.y,{});
@@ -89,13 +93,25 @@ export default class Ship extends PhysicalObject2D {
             //console.log(this.physicsObj);
             //this.physicsObj.angle = this.angle;
             //let rad = this.angle;
+            //this.physicsObj.angle;
+
             let rad = this.physicsObj.angle;
+            //let rad = this.physicsObj.angle;
             let dv = new TwoVector();
+            //dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(0.01);
             dv.set(Math.cos(rad), Math.sin(rad)).multiplyScalar(1);
             //console.log(dv);
-            Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
-            //Body.setVelocity( this.physicsObj, {x: 0.001, y: 0});
-            //console.log(this.physicsObj.velocity);
+
+            //this.physicsObj.velocity.x = dv.x;
+            //this.physicsObj.velocity.y = dv.y;
+            //console.log(this.physicsObj);
+            //Body.setAngularVelocity( this.physicsObj, this.angle);
+            //if(this.physicsObj.velocity.x == 0){
+                //Body.setVelocity( this.physicsObj, {x: 0.001, y: 0});
+                Body.setVelocity( this.physicsObj, {x: dv.x, y: dv.y});
+            //}
+            //console.log("this.physicsObj.velocity",this.physicsObj.velocity);
+            //console.log("this.physicsObj.position",this.physicsObj.position);
             //Body.setAngularVelocity(this.physicsObj, 0);
             //Body.setVelocity( this.physicsObj, {x: 0, y: 0});
             //console.log("ship brake!");
@@ -111,33 +127,29 @@ export default class Ship extends PhysicalObject2D {
             Body.setAngularVelocity(this.physicsObj, 0);
             Body.setVelocity( this.physicsObj, {x: 0, y: 0});
             console.log("ship brake!");
-            
+            this.physicsObj.angle = 0;
         }
     }
 
     RotatingLeft(){
-        if(this.physicsObj){
-            this.angle -= this.rotationSpeed; 
-            let Body = this.gameEngine.physicsEngine.Body;
-            //console.log("isRotatingRight!",o.rotationSpeed);
-            //o.physicsObj.angle += 0.01;
-            //this.Body.rotate( o.physicsObj, Math.PI/6);
-            let angle = this.rotationSpeed * Math.PI / 180;
-            Body.rotate( this.physicsObj,angle * -1);
-            //console.log(this.angle);
-        }
+        this.RotateShip(-1);
     }
 
     RotatingRight(){
+        this.RotateShip(1);
+    }
+
+    RotateShip(dir){
         if(this.physicsObj){
-            this.angle += this.rotationSpeed;
             let Body = this.gameEngine.physicsEngine.Body;
-            //console.log("isRotatingRight!",o.rotationSpeed);
-            //o.physicsObj.angle += 0.01;
-            //this.Body.rotate( o.physicsObj, Math.PI/6);
-            let angle = this.rotationSpeed * Math.PI / 180;
-            Body.rotate( this.physicsObj,angle);
-            //console.log(this.angle);
+            let angle = Math.PI / 180 * dir;
+            //console.log(angle);
+            //Body.rotate( this.physicsObj, 0.001 * dir );
+            //this.angle = this.angle + 0.1 * dir;
+            //this.physicsObj.angle = this.physicsObj.angle + 0.01 * dir;
+            Body.setAngularVelocity(this.physicsObj, angle);
+            //console.log("this.angle", this.angle);
+            //console.log("this.physicsObj.angle", this.physicsObj.angle);
         }
     }
 

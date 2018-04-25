@@ -95,10 +95,12 @@ export default class MyGameEngine extends GameEngine {
                 playerShip.thrusterForward();
                 //console.log(playerShip);
             } else if (inputData.input == 'right') {
-                playerShip.isRotatingRight = true;
+                //playerShip.isRotatingRight = true;
+                playerShip.RotatingRight();
                 //console.log("right key");
             } else if (inputData.input == 'left') {
-                playerShip.isRotatingLeft = true;
+                //playerShip.isRotatingLeft = true;
+                playerShip.RotatingLeft();
             } else if (inputData.input == 'brake') {
                 playerShip.thrusterBrake();
                 console.log("brake");

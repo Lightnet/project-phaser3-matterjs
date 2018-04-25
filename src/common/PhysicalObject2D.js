@@ -4,9 +4,31 @@ import Renderer from '../client/MyRenderer';
 import TwoVector from 'lance/serialize/TwoVector';
 import MathUtils from 'lance/lib/MathUtils';
 
-//not build yet...
+//work in progress debug
 export default class PhysicalObject2D extends GameObject {
 
+    /**
+    * The netScheme is a dictionary of attributes in this game
+    * object.  The attributes listed in the netScheme are those exact
+    * attributes which will be serialized and sent from the server
+    * to each client on every server update.
+    * The netScheme member is implemented as a getter.
+    *
+    * You may choose not to implement this method, in which
+    * case your object only transmits the default attributes
+    * which are already part of {@link PhysicalObject2D}.
+    * But if you choose to add more attributes, make sure
+    * the return value includes the netScheme of the super class.
+    *
+    * @memberof PhysicalObject2D
+    * @member {Object} netScheme
+    * @example
+    *     static get netScheme() {
+    *       return Object.assign({
+    *           mojo: { type: Serializer.TYPES.UINT8 },
+    *         }, super.netScheme);
+    *     }
+    */
     static get netScheme() {
         return Object.assign({
             playerId: { type: Serializer.TYPES.INT16 },
@@ -17,65 +39,39 @@ export default class PhysicalObject2D extends GameObject {
         }, super.netScheme);
     }
 
+    /**
+    * Creates an instance of a physical object.
+    * Override to provide starting values for position, velocity, angle and angular velocity.
+    * NOTE: all subclasses of this class must comply with this constructor signature.
+    *       This is required because the engine will create temporary instances when
+    *       syncs arrive on the clients.
+    * @param {GameEngine} gameEngine - the gameEngine this object will be used in
+    * @param {Object} options - options for the new object. See {@link GameObject}
+    * @param {Object} props - properties to be set in the new object
+    * @param {TwoVector} props.position - position vector
+    * @param {TwoVector} props.velocity - velocity vector
+    * @param {Number} props.angle - orientation angle
+    * @param {Number} props.angularVelocity - angular velocity
+    */
     constructor(gameEngine, options, props) {
         super(gameEngine, options);
-
-        /**
-        * ID of player who created this object
-        * @member {Number}
-        */
+        if(gameEngine !=null){
+            this.Body = gameEngine.physicsEngine.Body;
+        }
         this.playerId = 0;
-
         this.bendingIncrements = 0;
 
+        // set default position, velocity and quaternion
         this.position = new TwoVector(0, 0);
         this.velocity = new TwoVector(0, 0);
+        this.angle = 0;
         this.angularVelocity = 0;
-
-        /**
-        * object orientation angle in degrees
-        * @member {Number}
-        */
-        this.angle = 90;
-        this.bendingAngle = 0;
-
-        /**
-        * should rotate left by {@link DynamicObject#rotationSpeed} on next step
-        * @member {Boolean}
-        */
-       this.isRotatingLeft = false;
-
-       /**
-       * should rotate right by {@link DynamicObject#rotationSpeed} on next step
-       * @member {Boolean}
-       */
-       this.isRotatingRight = false;
-
-       /**
-       * should accelerate by {@link DynamicObject#acceleration} on next step
-       * @member {Boolean}
-       */
-       this.isAccelerating = false;
-
-       /**
-       * angle rotation per step
-       * @member {Number}
-       */
-       this.rotationSpeed = 2.5;
-
-       /**
-       * acceleration per step
-       * @member {Number}
-       */
-       this.acceleration = 0.1;
 
         // use values if provided
         props = props || {};
-
-        props = props || {};
         if (props.position) this.position.copy(props.position);
         if (props.velocity) this.velocity.copy(props.velocity);
-        //if (props.quaternion) this.quaternion.copy(props.quaternion);
+        if (props.angle) this.angle = props.angle;
         if (props.angularVelocity) this.angularVelocity = props.angularVelocity;
 
         this.class = PhysicalObject2D;
@@ -86,32 +82,35 @@ export default class PhysicalObject2D extends GameObject {
      * The output of this method is used to describe each instance in the traces,
      * which significantly helps in debugging.
      *
-     * @return {String} description - a string describing the DynamicObject
+     * @return {String} description - a string describing the PhysicalObject2D
      */
     toString() {
         let p = this.position.toString();
         let v = this.velocity.toString();
-        let q = this.angle.toString();
-        let a = this.angularVelocity.toString();
-        return `phyObj[${this.id}] player${this.playerId} Pos=${p} Vel=${v} angle=${q} AVel=${a}`;
+        let a = this.angle;
+        let av = this.angularVelocity;
+        return `phyObj2D[${this.id}] player${this.playerId} Pos=${p} Vel=${v} Ang=${a} AVel=${av}`;
     }
 
     // display object's physical attributes as a string
     // for debugging purposes mostly
     bendingToString() {
         if (this.bendingIncrements)
-            return `bend=${this.bending} increments=${this.bendingIncrements} deltaPos=${this.bendingPositionDelta} deltaQuat=${this.bendingQuaternionDelta}`;
+            return `bend=${this.bending} increments=${this.bendingIncrements} deltaPos=${this.bendingPositionDelta} deltaAngle=${this.bendingAngleDelta}`;
         return 'no bending';
     }
 
+    // derive and save the bending increment parameters:
+    // - bendingPositionDelta
+    // - bendingAVDelta
+    // - bendingAngleDelta
+    // these can later be used to "bend" incrementally from the state described
+    // by "original" to the state described by "self"
     bendToCurrent(original, bending, worldSettings, isLocal, bendingIncrements) {
 
-        // get the incremental delta position
-        this.incrementScale = bending / bendingIncrements;
-        this.bendingPositionDelta = (new TwoVector()).copy(this.position);
-        this.bendingPositionDelta.subtract(original.position);
-        this.bendingPositionDelta.multiplyScalar(this.incrementScale);
-
+        // if the object has defined a bending multiples for this object, use them
+        if (typeof this.bendingMultiple === 'number')
+            bending = this.bendingMultiple;
 
         // angle bending factor
         let angleBending = bending;
@@ -119,33 +118,111 @@ export default class PhysicalObject2D extends GameObject {
             angleBending = this.bendingAngleMultiple;
         if (isLocal && (typeof this.bendingAngleLocalMultiple === 'number'))
             angleBending = this.bendingAngleLocalMultiple;
-        this.bendingAngle = MathUtils.interpolateDeltaWithWrapping(original.angle, this.angle, angleBending, 0, 360) / bendingIncrements;
-        this.angle = original.angle;
 
-        //this.bendingTarget = (new this.constructor());
-        //this.bendingTarget.syncTo(this);
+        // get the incremental delta position
+        this.incrementScale = bending / bendingIncrements;
+        this.bendingPositionDelta = this.position.clone();
+        this.bendingPositionDelta.subtract(original.position);
+        this.bendingPositionDelta.multiplyScalar(this.incrementScale);
+        this.bendingVelocityDelta = this.velocity.clone();
+        this.bendingVelocityDelta.subtract(original.velocity);
+        this.bendingVelocityDelta.multiplyScalar(this.incrementScale);
+
+        // get the incremental angular-velocity
+        this.bendingAVDelta = (this.angularVelocity - original.angularVelocity) * this.incrementScale;
+
+        // get the incremental angle correction
+        //this.bendingAngleDelta = MathUtils.interpolateDeltaWithWrapping(original.angle, this.angle, angleBending, 0, 2 * Math.PI) / bendingIncrements;
+        this.bendingAngleDelta = MathUtils.interpolateDeltaWithWrapping(original.angle, this.angle, angleBending, 0, 360) / bendingIncrements;
+
+        this.bendingTarget = (new this.constructor());
+        this.bendingTarget.syncTo(this);
         this.syncTo(original, { keepVelocity: true });
-        //this.bendingIncrements = bendingIncrements;
-        //console.log(bendingIncrements);
+        this.bendingIncrements = bendingIncrements;
         this.bending = bending;
 
-        // TODO: use configurable physics bending
         // TODO: does refreshToPhysics() really belong here?
         //       should refreshToPhysics be decoupled from syncTo
         //       and called explicitly in all cases?
-        //this.refreshToPhysics();
+        this.refreshToPhysics();
     }
 
     syncTo(other, options) {
         super.syncTo(other);
+
         this.position.copy(other.position);
+        this.angle = other.angle;
+        this.angularVelocity = other.angularVelocity;
+
         if (!options || !options.keepVelocity) {
             this.velocity.copy(other.velocity);
         }
-        this.bendingAngle = other.bendingAngle;
 
-        //if (this.physicsObj)
-            //this.refreshToPhysics();
+        if (this.physicsObj)
+            this.refreshToPhysics();
+    }
+
+    // update position, angle, angular velocity, and velocity from new physical state.
+    refreshFromPhysics() {
+        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+        this.velocity.set(this.physicsObj.velocity.x,this.physicsObj.velocity.y);
+        //this.copyVector(this.physicsObj.position, this.position);
+        //this.copyVector(this.physicsObj.velocity, this.velocity);
+        //if(this.Body !=null){
+            //console.log("refreshFromPhysics------------------------");
+            //this.Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
+            //this.Body.setVelocity(this.physicsObj,{x:this.velocity.x,y:this.velocity.y});
+            //console.log("refreshFromPhysics",this.position);
+            //console.log(this.physicsObj.position);
+        //}
+
+        this.angle = this.physicsObj.angle;
+        this.angularVelocity = this.physicsObj.angularVelocity;
+    }
+
+    // generic vector copy.  We need this because different
+    // physics engines have different implementations.
+    // TODO: Better implementation: the physics engine implementor
+    // should define copyFromLanceVector and copyToLanceVector
+    copyVector(source, target) {
+        let sourceVec = source;
+        if (typeof source[0] === 'number' && typeof source[1] === 'number')
+            sourceVec = { x: source[0], y: source[1] };
+
+        if (typeof target.copy === 'function') {
+            target.copy(sourceVec);
+        } else if (Array.isArray(target)) {
+            target = [sourceVec.x, sourceVec.y];
+        } else {
+            target.x = sourceVec.x;
+            target.y = sourceVec.y;
+        }
+    }
+
+    // update position, angle, angular velocity, and velocity from new game state.
+    refreshToPhysics() {
+        //this.copyVector(this.position, this.physicsObj.position);
+        //this.position.x = this.physicsObj.position.x;
+        //this.position.y = this.physicsObj.position.y;
+        //this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
+
+        if(this.Body !=null){
+            //console.log("refreshFromPhysics------------------------");
+            this.Body.setPosition(this.physicsObj,{x:this.position.x,y:this.position.y});
+            this.Body.setVelocity(this.physicsObj,{x:this.velocity.x,y:this.velocity.y});
+            //console.log("refreshFromPhysics",this.position);
+            //console.log(this.physicsObj.position);
+        }
+
+        //console.log("refreshToPhysics",this.position);
+        //console.log(this.physicsObj.position);
+
+        this.velocity.x = this.physicsObj.velocity.x;
+        this.velocity.y = this.physicsObj.velocity.y;
+
+        //this.copyVector(this.velocity, this.physicsObj.velocity);
+        //this.physicsObj.angle = this.angle;
+        this.physicsObj.angularVelocity = this.angularVelocity;
     }
 
     // apply one increment of bending
@@ -153,64 +230,31 @@ export default class PhysicalObject2D extends GameObject {
         if (this.bendingIncrements === 0)
             return;
 
-        if (stepDesc && stepDesc.dt) {
-            const timeFactor = stepDesc.dt / (1000 / 60);
-            const posDelta = (new TwoVector()).copy(this.bendingPositionDelta).multiplyScalar(timeFactor);
-            const avDelta = (new TwoVector()).copy(this.bendingAVDelta).multiplyScalar(timeFactor);
-            this.position.add(posDelta);
+        let timeFactor = 1;
+        if (stepDesc && stepDesc.dt)
+            timeFactor = stepDesc.dt / (1000 / 60);
 
-            // http://brm.io/matter-js/docs/classes/Body.html
+        const posDelta = this.bendingPositionDelta.clone().multiplyScalar(timeFactor);
+        const velDelta = this.bendingVelocityDelta.clone().multiplyScalar(timeFactor);
+        this.position.add(posDelta);
+        this.velocity.add(velDelta);
+        this.angularVelocity += (this.bendingAVDelta * timeFactor);
+        this.angle += (this.bendingAngleDelta * timeFactor);
+        //if (this.angle > Math.PI) this.angle -= Math.PI;
+        //if (this.angle < 0) this.angle += Math.PI;
+        if (this.angle > 360) this.angle = 0;
+        if (this.angle < 0) this.angle = 360;
 
-            //this.angularVelocity.add(avDelta);
 
-
-            // TODO: this is an unacceptable workaround that must be removed.  It solves the
-            // jitter problem by applying only three steps of slerp (thus avoiding slerp to back in time
-            // instead of solving the problem with a true differential quaternion
-            if (this.bendingIncrements > 3) {
-                //this.quaternion.slerp(this.bendingTarget.quaternion, this.incrementScale * timeFactor * 0.6);
-            }
-        } else {
-            this.position.add(this.bendingPositionDelta);
-            //this.angularVelocity.add(this.bendingAVDelta);
-            //this.quaternion.slerp(this.bendingTarget.quaternion, this.incrementScale);
-        }
-        this.angle += this.bendingAngle;
-
-        // TODO: the following approach is encountering gimbal lock
-        // this.quaternion.multiply(this.bendingQuaternionDelta);
         this.bendingIncrements--;
     }
 
     // interpolate implementation
-    interpolate(nextObj, percent, worldSettings) {
-        let angle = this.angle;
+    interpolate(nextObj, percent) {
+
         // slerp to target position
         this.position.lerp(nextObj.position, percent);
-
-        var shortestAngle = ((((nextObj.angle - angle) % 360) + 540) % 360) - 180;
-        this.angle = angle + shortestAngle * percent;
-    }
-
-    // update position, quaternion, and velocity from new physical state.
-    refreshFromPhysics() {
-        this.position.set(this.physicsObj.position.x,this.physicsObj.position.y);
-        this.velocity.set(this.physicsObj.velocity.x,this.physicsObj.velocity.y);
-        //this.angle = this.physicsObj.angle;
-    }
-
-    // update position, quaternion, and velocity from new physical state.
-    refreshToPhysics() {
-        //http://brm.io/matter-js/docs/classes/Body.html
-
-        this.physicsObj.position.x = this.position.x;
-        this.physicsObj.position.y = this.position.y;
-        //console.log(this.physicsObj.position);
-        this.physicsObj.velocity.x = this.velocity.x;
-        this.physicsObj.velocity.y = this.velocity.y;
-        //console.log(this.physicsObj.velocity);
-        //this.physicsObj.angularVelocity = this.angularVelocity; // angularVelocity = 0
-        //this.physicsObj.angle = this.angle; //angle = 0 //radian?
-        //console.log(this.physicsObj.angularVelocity);
+        //this.angle = MathUtils.interpolateDeltaWithWrapping(this.angle, nextObj.angle, percent, 0, 2 * Math.PI);
+        this.angle = MathUtils.interpolateDeltaWithWrapping(this.angle, nextObj.angle, percent, 0, 360);
     }
 }
